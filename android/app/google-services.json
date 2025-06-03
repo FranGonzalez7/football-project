@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "763158574833",
+    "project_id": "footbal-picker",
+    "storage_bucket": "footbal-picker.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763158574833:android:9de96db880c091e392db50",
+        "android_client_info": {
+          "package_name": "com.example.football_picker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEYg00sXlbPSRnvu_OIP1jA6wCzOdNBEM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
