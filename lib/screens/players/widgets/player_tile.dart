@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:football_picker/screens/players/player_model.dart';
+import 'package:football_picker/models/player_model.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
 class PlayerTile extends StatelessWidget {
@@ -27,7 +27,7 @@ class PlayerTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        onTap: onTap,
+        onTap: (){},
         
         // ✅ Formato del círculo:
         leading: CircleAvatar(

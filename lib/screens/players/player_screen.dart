@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:football_picker/screens/players/player_services.dart';
-import 'package:football_picker/screens/players/widgets/add_player_modal.dart';
+import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/screens/players/widgets/player_tile.dart';
-import 'player_model.dart';
+import '../../models/player_model.dart';
 
 class PlayerScreen extends StatefulWidget {
   const PlayerScreen({Key? key}) : super(key: key);
@@ -59,18 +58,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
     }
   }
 
-  void _showAddPlayerModal() {
-    showDialog(
-    context: context,
-    barrierDismissible: true, // para cerrar tocando fuera del modal
-    builder: (context) {
-      return AddPlayerModal(
-        playerService: _playerService,
-        onPlayerAdded: _initUserAndLoadPlayers,
-      );
-    },
-  );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +81,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 },
               ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddPlayerModal,
+        onPressed: (){},
         child: const Icon(Icons.add),
       ),
     );
