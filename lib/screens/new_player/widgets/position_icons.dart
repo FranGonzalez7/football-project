@@ -7,10 +7,14 @@ IconData getPositionIcon(String position) {
       return Icons.sports_handball_outlined;
     case 'defensa':
       return Icons.shield;
-    case 'centrocampista':
-      return Icons.compare_arrows;
+    case 'centro':
+      return Icons.directions_run;
     case 'delantero':
-      return Icons.sports;
+      return Icons.sports_soccer;
+    case 'lateral izq':
+      return Icons.arrow_back;
+    case 'lateral der':
+      return Icons.arrow_forward;
     default:
       return Icons.help_outline;
   }

@@ -37,6 +37,7 @@ class PositionSelector extends StatelessWidget {
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              //TODO: Oscurecer iconos y nombres al marcar:
               children: [
                 Icon(positionIcons[position], color: Colors.white),
                 const SizedBox(height: 8),

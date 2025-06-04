@@ -67,9 +67,11 @@ class PlayerTile extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
+
+            // ✅ Formato de posiciones:
             Wrap(
               spacing: 8,
-              runSpacing: 4,
+              runSpacing: 2,
               children:
                   player.position
                       .split(',')
@@ -78,13 +80,13 @@ class PlayerTile extends StatelessWidget {
                           label: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(getPositionIcon(pos), size: 16),
+                              Icon(getPositionIcon(pos), size: 25, color: AppColors.accentButton,),
                               const SizedBox(width: 4),
                               Text(pos.trim()),
                             ],
                           ),
-                          backgroundColor: Colors.grey.shade300,
-                          labelStyle: const TextStyle(color: Colors.black),
+                          backgroundColor: AppColors.background,
+                          labelStyle: const TextStyle(color: Colors.white),
                         ),
                       )
                       .toList(),
