@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart'; // o usa Icons si prefieres
+
 
 IconData getPositionIcon(String position) {
   switch (position.toLowerCase().trim()) {
     case 'portero':
-      return LucideIcons.goal;
+      return Icons.sports_handball_outlined;
     case 'defensa':
       return Icons.shield;
     case 'centrocampista':
