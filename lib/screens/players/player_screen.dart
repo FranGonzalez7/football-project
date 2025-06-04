@@ -95,6 +95,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   );
                 },
               ),
+
+      //TODO: Modificar formato de botón:        
       floatingActionButton: FloatingActionButton(
         onPressed: _goToAddPlayerScreen,
         child: const Icon(Icons.add),

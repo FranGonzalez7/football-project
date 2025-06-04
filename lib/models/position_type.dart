@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
 
 enum PositionType { portero, defensa, centrocampista, delantero, lateralIzq, lateralDer }
 
@@ -13,8 +13,9 @@ const positionLabels = {
   PositionType.lateralDer: 'Lateral Der',
 };
 
+//TODO buscar nuevos iconos
 const positionIcons = {
-  PositionType.portero: LucideIcons.goal,
+  PositionType.portero: Icons.sports_handball_outlined,
   PositionType.defensa: Icons.shield,
   PositionType.centrocampista: Icons.directions_run,
   PositionType.delantero: Icons.sports_soccer,

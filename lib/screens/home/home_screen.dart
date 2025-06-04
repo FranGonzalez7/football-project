@@ -12,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? groupName;
+  String? groupCode;
   bool isLoading = true;
 
   @override
@@ -25,10 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (uid == null) return;
 
     final userDoc =
-        await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
     final groupId = userDoc.data()?['groupId'];
 
     if (groupId != null) {
@@ -38,13 +36,16 @@ class _HomeScreenState extends State<HomeScreen> {
               .doc(groupId)
               .get();
       final name = groupDoc.data()?['name'];
+      final code = groupDoc.data()?['code'];
       setState(() {
         groupName = name;
+        groupCode = code;
         isLoading = false;
       });
     } else {
       setState(() {
         groupName = 'Sin grupo';
+        groupCode = 'Sin código';
         isLoading = false;
       });
     }
@@ -53,17 +54,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home Screen'),
-        actions: [
-          AppBarMenuButton(),
-        ],
-      ),
+      appBar: AppBar(title: Text('Home Screen'), actions: [AppBarMenuButton()]),
       body: Center(
         child: Column(
           children: [
             Text(
               'Welcome to ${groupName ?? 'desconocido'}',
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+            Text(
+              'Group Code: ${groupCode ?? 'desconocido'}',
               style: TextStyle(fontSize: 20, color: Colors.white),
             ),
           ],
@@ -80,9 +80,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Expanded(
-              child: IconButton(onPressed: () {
-                Navigator.pushNamed(context, '/players');
-              }, icon: Icon(Icons.people)),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/players');
+                },
+                icon: Icon(Icons.people),
+              ),
             ),
             Expanded(
               child: IconButton(
