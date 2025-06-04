@@ -9,11 +9,13 @@ class AppRoutes {
   static const String register = '/register';
   static const String home = '/home';
   static const String players = '/players';
+  
 
   static Map<String, WidgetBuilder> routes = {
     login: (context) => LoginScreen(),
     register: (context) => RegisterScreen(),
     home: (context) => HomeScreen(),
     players: (context) => PlayerScreen(),
+    
   };
 }

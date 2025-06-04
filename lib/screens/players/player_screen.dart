@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:football_picker/screens/new_player/new_player_screen.dart';
 import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/screens/players/widgets/player_tile.dart';
 import '../../models/player_model.dart';
@@ -12,6 +13,7 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  
   final PlayerService _playerService = PlayerService();
 
   List<Player> _players = [];
@@ -23,6 +25,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
     super.initState();
     _initUserAndLoadPlayers();
   }
+
+  void _goToAddPlayerScreen() async {
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => NewPlayerScreen(playerService: _playerService),
+    ),
+  );
+
+  if (result == true) {
+    await _initUserAndLoadPlayers();
+  }
+}
 
   Future<void> _initUserAndLoadPlayers() async {
     setState(() => _isLoading = true);
@@ -81,9 +96,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 },
               ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){},
+        onPressed: _goToAddPlayerScreen,
         child: const Icon(Icons.add),
       ),
     );
   }
 }
+
+
