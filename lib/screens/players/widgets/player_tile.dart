@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
+import 'package:football_picker/screens/new_player/widgets/position_icons.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
 class PlayerTile extends StatelessWidget {
@@ -26,40 +27,71 @@ class PlayerTile extends StatelessWidget {
       color: AppColors.textField,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        onTap: (){},
-        
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
+        onTap: () {},
+
         // ✅ Formato del círculo:
         leading: CircleAvatar(
           radius: 26,
           backgroundColor: Colors.lightBlue,
           child: Text(
             player.number.toString(),
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
 
         // ✅ Formato del nombre del jugador (título):
-        title: Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-                player.name,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-              SizedBox(width: 5,),
-            
-            if (isOwner)
-              const Icon(Icons.edit, color: Colors.amber, size: 20),
+            Row(
+              children: [
+                Text(
+                  player.name,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 5),
+                if (isOwner)
+                  const Icon(Icons.edit, color: Colors.amber, size: 20),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children:
+                  player.position
+                      .split(',')
+                      .map(
+                        (pos) => Chip(
+                          label: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(getPositionIcon(pos), size: 16),
+                              const SizedBox(width: 4),
+                              Text(pos.trim()),
+                            ],
+                          ),
+                          backgroundColor: Colors.grey.shade300,
+                          labelStyle: const TextStyle(color: Colors.black),
+                        ),
+                      )
+                      .toList(),
+            ),
           ],
         ),
 
-        // ✅ Formato de la posición/posiciones del jugador (subtítulo):
-        subtitle: Text(
-          player.position,
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-
-        // ✅ Formato del conteo de puntos:
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -67,7 +99,6 @@ class PlayerTile extends StatelessWidget {
               '${player.points} pts',
               style: const TextStyle(fontSize: 16, color: Colors.white),
             ),
-            
           ],
         ),
       ),
@@ -84,19 +115,26 @@ class PlayerTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: const Icon(Icons.delete, color: Colors.white),
         ),
-        
+
         // ✅ Lógica y formato del cuadro de texto para confirmar el borrado:
         confirmDismiss: (direction) async {
           return await showDialog<bool>(
             context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Confirmar borrado'),
-              content: Text('¿Eliminar jugador ${player.name}?'),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-                TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Eliminar')),
-              ],
-            ),
+            builder:
+                (context) => AlertDialog(
+                  title: const Text('Confirmar borrado'),
+                  content: Text('¿Eliminar jugador ${player.name}?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancelar'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Eliminar'),
+                    ),
+                  ],
+                ),
           );
         },
         onDismissed: (direction) => onDelete!(),

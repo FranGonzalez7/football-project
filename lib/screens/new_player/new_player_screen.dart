@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
+import 'package:football_picker/models/position_type.dart';
+import 'package:football_picker/screens/new_player/widgets/position_selector.dart';
 import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/theme/app_colors.dart';
 import 'package:football_picker/widgets/custom_divider.dart';
@@ -20,16 +22,33 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
   final _formKey = GlobalKey<FormState>();
 
   String _name = '';
-  String _position = '';
+
   String _number = '';
+
+  final List<PositionType> _selectedPositions = [];
+
+  void _togglePosition(PositionType position) {
+    setState(() {
+      _selectedPositions.contains(position)
+          ? _selectedPositions.remove(position)
+          : _selectedPositions.add(position);
+    });
+  }
 
   void _savePlayer() async {
     if (!_formKey.currentState!.validate()) return;
 
+    if (_selectedPositions.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona al menos una posición')),
+      );
+      return;
+    }
+
     final player = Player(
       id: '',
       name: _name,
-      position: _position,
+      position: _selectedPositions.map((p) => positionLabels[p]).join(', '),
       number: int.parse(_number),
       points: 100,
       createdBy: '',
@@ -84,15 +103,14 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
 
               SizedBox(height: 10),
               CustomDivider(title: 'Posición'),
+              const SizedBox(height: 8),
+              PositionSelector(
+                selectedPositions: _selectedPositions,
+                onToggle: _togglePosition,
+              ),
+
               SizedBox(height: 5),
               CustomDivider(title: 'Stats iniciales'),
-
-              // TextFormField(
-              //   style: TextStyle(color: Colors.white),
-              //   decoration: const InputDecoration(labelText: 'Posición' ),
-              //   onChanged: (value) => _position = value,
-              //   validator: (value) => value == null || value.isEmpty ? 'Obligatorio' : null,
-              // ),
 
               const SizedBox(height: 20),
 
