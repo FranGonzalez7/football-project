@@ -31,7 +31,7 @@ class PositionSelector extends StatelessWidget {
               color: selected ? AppColors.accentButton : AppColors.textField,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: selected ? Colors.white : Colors.grey.shade700,
+                color: selected ? Colors.white : Colors.transparent,
                 width: 1.5,
               ),
             ),
@@ -43,7 +43,7 @@ class PositionSelector extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   positionLabels[position]!,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ],
