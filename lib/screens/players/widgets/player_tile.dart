@@ -81,8 +81,8 @@ class PlayerTile extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(getPositionIcon(pos), size: 25, color: AppColors.accentButton,),
-                              const SizedBox(width: 4),
-                              Text(pos.trim()),
+                              // const SizedBox(width: 4),
+                              // Text(pos.trim()),
                             ],
                           ),
                           backgroundColor: AppColors.background,
