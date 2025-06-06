@@ -70,6 +70,7 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
             key: _formKey,
             child: Column(
               children: [
+
                 // ✅ Título:
                 Text(
                   'Nuevo jugador',
@@ -79,9 +80,18 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-          
+
+                SizedBox(height: 20,),
+
+                // ✅ Círculo para avatar/foto:
+                CircleAvatar(
+                  radius: 80,
+                  backgroundColor: AppColors.accentButton,
+                  child: Icon(Icons.camera_alt_outlined, size: 60, color: Colors.black,)
+                ),
+
                 SizedBox(height: 15),
-          
+
                 // ✅ Cuadro para el nombre:
                 CustomTextFormField(
                   title: 'Nombre',
@@ -90,7 +100,7 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                       (value) =>
                           value == null || value.isEmpty ? 'Obligatorio' : null,
                 ),
-          
+
                 // ✅ Cuadro para el número:
                 CustomTextFormField(
                   title: 'Número',
@@ -102,7 +112,7 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                     return null;
                   },
                 ),
-          
+
                 SizedBox(height: 10),
                 CustomDivider(title: 'Posición'),
                 const SizedBox(height: 8),
@@ -110,12 +120,12 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                   selectedPositions: _selectedPositions,
                   onToggle: _togglePosition,
                 ),
-          
+
                 SizedBox(height: 10),
                 CustomDivider(title: 'Stats iniciales'),
-          
+
                 SizedBox(height: 5),
-          
+
                 StatSlider(
                   initialValue: _points,
                   onChanged: (value) {
@@ -124,9 +134,9 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                     });
                   },
                 ),
-          
+
                 const SizedBox(height: 20),
-          
+
                 //Spacer(),
                 //TODO: Poner este botón al final de la pantalla:
                 CustomPrimaryButton(text: 'Guardar', onPressed: _savePlayer),
@@ -134,7 +144,6 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
             ),
           ),
         ),
-        
       ),
     );
   }

@@ -20,28 +20,51 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Función para iniciar sesión:
   Future<void> _login() async {
+  setState(() {
+    _error = null;
+  });
+
+  final email = _emailController.text.trim();
+  final password = _passwordController.text.trim();
+
+  if (email.isEmpty || password.isEmpty) {
     setState(() {
-      _error = null;
+      _error = 'Por favor, introduce el email y la contraseña.';
     });
-
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Inicio de sesión exitoso')));
-
-      // Ruta para home_screen:
-      Navigator.pushReplacementNamed(context, '/home');
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _error = e.message;
-      });
-    }
+    return;
   }
+
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Inicio de sesión exitoso')),
+    );
+
+    Navigator.pushReplacementNamed(context, '/home');
+  } on FirebaseAuthException catch (e) {
+    setState(() {
+      //TODO: Este manejo de errores no funciona del todo bien:
+      switch (e.code) {
+        case 'user-not-found':
+          _error = 'No se encontró una cuenta con ese email.';
+          break;
+        case 'wrong-password':
+          _error = 'La contraseña es incorrecta.';
+          break;
+        case 'invalid-email':
+          _error = 'El formato del email no es válido.';
+          break;
+        default:
+          _error = 'Error al iniciar sesión. Inténtalo de nuevo.';
+      }
+    });
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {

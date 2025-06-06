@@ -3,7 +3,7 @@ class Player {
   final String name;         // Nombre del jugador
   final String position;     // Posición (como String)
   final int number;          // Número de camiseta
-  final int points;          // Stats o puntos, inicializados a 100 por defecto
+  final int points;          // Stats o puntos, inicializados a 150 por defecto
   final String createdBy;    // UserId del creador del jugador
 
   Player({

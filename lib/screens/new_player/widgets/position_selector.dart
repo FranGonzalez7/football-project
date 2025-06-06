@@ -12,9 +12,7 @@ class PositionSelector extends StatelessWidget {
     required this.selectedPositions,
     required this.onToggle,
   });
-
-
-  // ❓PTE centrar casillas en cuadrícula
+  
   @override
   Widget build(BuildContext context) {
     return Wrap(  //
@@ -36,14 +34,16 @@ class PositionSelector extends StatelessWidget {
               ),
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              //TODO: Oscurecer iconos y nombres al marcar:
+              mainAxisSize: MainAxisSize.min,              
               children: [
-                Icon(positionIcons[position], color: Colors.white),
+                Icon(positionIcons[position], 
+                color: selected ? Colors.black : Colors.white),
                 const SizedBox(height: 8),
                 Text(
                   positionLabels[position]!,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: selected ? Colors.black : Colors.white, 
+                    fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ],

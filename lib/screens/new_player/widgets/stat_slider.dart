@@ -25,8 +25,11 @@ class StatSlider extends StatelessWidget {
             valueIndicatorColor: AppColors.accentButton, // Fondo de la etiqueta
             valueIndicatorTextStyle: const TextStyle(
               color: Colors.black,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.bold,              
             ),
+            activeTickMarkColor: Colors.white,
+            inactiveTickMarkColor: Colors.black,
+            showValueIndicator: ShowValueIndicator.always, 
           
           ),            
           child: Slider(
