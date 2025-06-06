@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:football_picker/screens/new_player/new_player_screen.dart';
 import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/screens/players/widgets/player_tile.dart';
+import 'package:football_picker/theme/app_colors.dart';
 import '../../models/player_model.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -13,7 +14,6 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  
   final PlayerService _playerService = PlayerService();
 
   List<Player> _players = [];
@@ -27,17 +27,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   void _goToAddPlayerScreen() async {
-  final result = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => NewPlayerScreen(playerService: _playerService),
-    ),
-  );
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NewPlayerScreen(playerService: _playerService),
+      ),
+    );
 
-  if (result == true) {
-    await _initUserAndLoadPlayers();
+    if (result == true) {
+      await _initUserAndLoadPlayers();
+    }
   }
-}
 
   Future<void> _initUserAndLoadPlayers() async {
     setState(() => _isLoading = true);
@@ -73,7 +73,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,13 +95,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 },
               ),
 
-      //TODO: Modificar formato de botón:        
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _goToAddPlayerScreen,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.person_add),
+        label: const Text(
+          'New Player',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: AppColors.accentButton,
+        foregroundColor: Colors.black,
+        elevation: 8,
       ),
     );
   }
 }
-
-

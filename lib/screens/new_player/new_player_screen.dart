@@ -114,6 +114,8 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                 ),
 
                 SizedBox(height: 10),
+
+                // ✅ Sección para las posiciones:
                 CustomDivider(title: 'Posición'),
                 const SizedBox(height: 8),
                 PositionSelector(
@@ -122,8 +124,9 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                 ),
 
                 SizedBox(height: 10),
-                CustomDivider(title: 'Stats iniciales'),
 
+                // ✅ Sección para los stats:
+                CustomDivider(title: 'Stats iniciales'),
                 SizedBox(height: 5),
 
                 StatSlider(
