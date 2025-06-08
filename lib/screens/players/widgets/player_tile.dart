@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
 import 'package:football_picker/screens/new_player/widgets/position_icons.dart';
+import 'package:football_picker/screens/players/widgets/player_card.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
 class PlayerTile extends StatelessWidget {
@@ -23,85 +24,111 @@ class PlayerTile extends StatelessWidget {
 
     // ✅ Formato de la Card:
     final tile = Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       color: AppColors.textField,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
-        ),
-        onTap: () {},
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () {
+          showGeneralDialog(
+            context: context,
+            barrierDismissible: true,
+            barrierLabel: "Cerrar",
+            barrierColor: Colors.black54, // fondo semitransparente
+            transitionDuration: const Duration(milliseconds: 300),
+            pageBuilder: (context, anim1, anim2) {
+              return Center(child: PlayerCard(player: player));
+            },
+            transitionBuilder: (context, anim1, anim2, child) {
+              return ScaleTransition(
+                scale: CurvedAnimation(
+                  parent: anim1,
+                  curve: Curves.easeOutBack,
+                ),
+                child: child,
+              );
+            },
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Avatar cuadrado redondeado
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.camera_alt_outlined,
+                  color: Colors.black,
+                  size: 35,
+                ),
+              ),
+              const SizedBox(width: 16),
 
-        // ✅ Formato del círculo:
-        leading: CircleAvatar(
-          radius: 26,
-          backgroundColor: Colors.lightBlue,
-          child: Text(
-            player.number.toString(),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
+              // Contenido principal
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          player.name,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        if (isOwner)
+                          const Icon(Icons.edit, color: Colors.amber, size: 20),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 2,
+                      children:
+                          player.position
+                              .split(',')
+                              .map(
+                                (pos) => CircleAvatar(
+                                  radius: 22,
+                                  backgroundColor: AppColors.background,
+                                  child: Icon(
+                                    getPositionIcon(pos.trim()),
+                                    size: 25,
+                                    color: AppColors.accentButton,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                    ),
+                  ],
+                ),
+              ),
 
-        // ✅ Formato del nombre del jugador (título):
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  player.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              // Puntos centrados verticalmente
+              SizedBox(
+                height: 75,
+                child: Center(
+                  child: Text(
+                    '${player.points} pts',
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
-                const SizedBox(width: 5),
-                if (isOwner)
-                  const Icon(Icons.edit, color: Colors.amber, size: 20),
-              ],
-            ),
-            const SizedBox(height: 6),
-
-            // ✅ Formato de posiciones:
-            Wrap(
-              spacing: 8,
-              runSpacing: 2,
-              children:
-                  player.position
-                      .split(',')
-                      .map(
-                        (pos) => Chip(
-                          label: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(getPositionIcon(pos), size: 25, color: AppColors.accentButton,),
-                              // const SizedBox(width: 4),
-                              // Text(pos.trim()),
-                            ],
-                          ),
-                          backgroundColor: AppColors.background,
-                          labelStyle: const TextStyle(color: Colors.white),
-                        ),
-                      )
-                      .toList(),
-            ),
-          ],
-        ),
-
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '${player.points} pts',
-              style: const TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
