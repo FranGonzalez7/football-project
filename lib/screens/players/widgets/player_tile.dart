@@ -7,6 +7,7 @@ import 'package:football_picker/theme/app_colors.dart';
 class PlayerTile extends StatelessWidget {
   final Player player;
   final String currentUserId;
+  final bool isAdmin;
   final VoidCallback? onDelete;
   final VoidCallback? onTap;
 
@@ -14,6 +15,7 @@ class PlayerTile extends StatelessWidget {
     Key? key,
     required this.player,
     required this.currentUserId,
+    required this.isAdmin,
     this.onDelete,
     this.onTap,
   }) : super(key: key);
@@ -89,8 +91,10 @@ class PlayerTile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 5),
-                        if (isOwner)
-                          const Icon(Icons.edit, color: Colors.amber, size: 20),
+                        if (isOwner && !isAdmin)
+                          const Icon(Icons.star_border, color: Colors.amber, size: 20),
+                        if (!isOwner && isAdmin)
+                          const Icon(Icons.person, color: Colors.amber, size: 20),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -134,7 +138,7 @@ class PlayerTile extends StatelessWidget {
     );
 
     // ✅ Lógica y formato para el desplegable para borrar jugador:
-    if (isOwner && onDelete != null) {
+    if (isAdmin && onDelete != null) {
       return Dismissible(
         key: Key(player.id),
         direction: DismissDirection.endToStart,

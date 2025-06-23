@@ -7,6 +7,8 @@ import 'package:football_picker/screens/players/widgets/player_tile.dart';
 import 'package:football_picker/theme/app_colors.dart';
 import '../../models/player_model.dart';
 import 'package:football_picker/screens/players/widgets/player_sort_menu.dart';
+import 'package:football_picker/models/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PlayerScreen extends StatefulWidget {
   const PlayerScreen({Key? key}) : super(key: key);
@@ -17,6 +19,8 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen> {
   final PlayerService _playerService = PlayerService();
+
+  AppUser? _currentUser;
 
   List<Player> _players = [];
   bool _isLoading = true;
@@ -31,6 +35,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   void _goToAddPlayerScreen() async {
+    final isAdmin = _currentUser?.role == 'admin';
+    final hasCreatedPlayer = _players.any((p) => p.createdBy == _currentUserId);
+
+    // ❌ Si es user y ya ha creado un jugador → bloquear
+    if (!isAdmin && hasCreatedPlayer) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Solo puedes añadir tu jugador.')),
+      );
+      return;
+    }
+
+    // ✅ Si es admin o aún no ha creado ninguno → permitir
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -49,6 +65,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       _currentUserId = user?.uid;
+
+      // 🔥 Cargar el AppUser desde Firestore
+      if (_currentUserId != null) {
+        final userDoc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(_currentUserId)
+                .get();
+
+        if (userDoc.exists) {
+          _currentUser = AppUser.fromMap(_currentUserId!, userDoc.data()!);
+        }
+      }
 
       final players = await _playerService.getPlayers();
       setState(() {
@@ -72,6 +101,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _deletePlayer(String playerId) async {
+    if (_currentUser?.role != 'admin') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Solo el administrador puede eliminar jugadores'),
+        ),
+      );
+      return;
+    }
+
     try {
       await _playerService.deletePlayer(playerId);
       ScaffoldMessenger.of(
@@ -119,6 +157,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   return PlayerTile(
                     player: player,
                     currentUserId: _currentUserId ?? '',
+                    isAdmin: _currentUser?.role == 'admin',
                     onDelete: () => _deletePlayer(player.id),
                   );
                 },

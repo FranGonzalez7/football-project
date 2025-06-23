@@ -130,4 +130,8 @@ class AuthService {
       return 'Error: $e';
     }
   }
+
+  Future<void> logout() async {
+    await FirebaseAuth.instance.signOut();
+  }
 }
