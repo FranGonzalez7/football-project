@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:football_picker/models/user_model.dart';
 
-
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// ✅ Registro creando grupo
+  /// ✅ Registro creando grupo (admin)
+
   Future<String?> registerWithNewGroup({
     required String email,
     required String password,
@@ -15,21 +15,26 @@ class AuthService {
     required String groupCode,
   }) async {
     try {
-      // Verificar que el nombre y código del grupo no existan
-      final existingName = await _firestore
-          .collection('groups')
-          .where('name', isEqualTo: groupName)
-          .get();
+      // 🔍 Verificar que no exista ya un grupo con ese nombre
+      final existingName =
+          await _firestore
+              .collection('groups')
+              .where('name', isEqualTo: groupName)
+              .get();
 
-      final existingCode = await _firestore
-          .collection('groups')
-          .where('code', isEqualTo: groupCode)
-          .get();
+      // 🔍 Verificar que el código del grupo no esté ya en uso
+      final existingCode =
+          await _firestore
+              .collection('groups')
+              .where('code', isEqualTo: groupCode)
+              .get();
 
-      if (existingName.docs.isNotEmpty) return 'Ya existe un grupo con ese nombre';
-      if (existingCode.docs.isNotEmpty) return 'El código ya está en uso, elige otro';
+      if (existingName.docs.isNotEmpty)
+        return 'Ya existe un grupo con ese nombre';
+      if (existingCode.docs.isNotEmpty)
+        return 'El código ya está en uso, elige otro';
 
-      // Crear usuario
+      // 🔐 Crear el usuario en Firebase Authentication
       final userCred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -37,7 +42,7 @@ class AuthService {
 
       final uid = userCred.user!.uid;
 
-      // Crear grupo
+      // 🏷️ Crear el nuevo grupo en Firestore y asignar al usuario como primer miembro
       final groupDoc = await _firestore.collection('groups').add({
         'name': groupName,
         'code': groupCode.toUpperCase(),
@@ -45,44 +50,58 @@ class AuthService {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // Crear usuario en Firestore
-      final user = AppUser(uid: uid, email: email, groupId: groupDoc.id);
+      // 👤 Crear el documento del usuario con rol "admin"
+      final user = AppUser(
+        uid: uid,
+        email: email,
+        groupId: groupDoc.id,
+        role: 'admin', // 🟢 Asignamos el rol de administrador
+      );
+
+      // 💾 Guardar el usuario en la colección 'users'
       await _firestore.collection('users').doc(uid).set(user.toMap());
 
-      return null; // sin error
+      return null; // ✅ Registro exitoso
     } on FirebaseAuthException catch (e) {
+      // ⚠️ Errores relacionados con Firebase Auth (correo, contraseña, etc.)
       return e.message;
     } catch (e) {
+      // ⚠️ Otros errores inesperados
       return 'Error: $e';
     }
   }
 
-  /// ✅ Registro uniéndose a grupo
+  /// ✅ Registro uniéndose a un grupo existente (user)
   Future<String?> registerWithExistingGroup({
     required String email,
     required String password,
     required String groupCode,
   }) async {
     try {
-      final query = await _firestore
-          .collection('groups')
-          .where('code', isEqualTo: groupCode.toUpperCase())
-          .limit(1)
-          .get();
+      // 🔍 Buscar grupo por código (asegurando mayúsculas)
+      final query =
+          await _firestore
+              .collection('groups')
+              .where('code', isEqualTo: groupCode.toUpperCase())
+              .limit(1)
+              .get();
 
+      // ❌ Si no se encuentra ningún grupo con ese código
       if (query.docs.isEmpty) return 'El código no corresponde a ningún grupo';
 
-      // Crear usuario
+      // 🔐 Crear el usuario en Firebase Authentication
       final userCred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
       final uid = userCred.user!.uid;
+
+      // 📎 Obtener referencia del grupo y su ID
       final groupDoc = query.docs.first;
       final groupId = groupDoc.id;
 
-      // Añadir a la lista de miembros si no está
+      // ➕ Añadir el nuevo miembro a la lista (si aún no está)
       final members = List<String>.from(groupDoc.get('members') ?? []);
       if (!members.contains(uid)) {
         members.add(uid);
@@ -91,14 +110,23 @@ class AuthService {
         });
       }
 
-      // Crear usuario en Firestore
-      final user = AppUser(uid: uid, email: email, groupId: groupId);
+      // 👤 Crear el documento del usuario con rol "user"
+      final user = AppUser(
+        uid: uid,
+        email: email,
+        groupId: groupId,
+        role: 'user', // 🟡 Rol normal (no admin)
+      );
+
+      // 💾 Guardar el usuario en la colección 'users'
       await _firestore.collection('users').doc(uid).set(user.toMap());
 
-      return null; // sin error
+      return null; // ✅ Registro exitoso
     } on FirebaseAuthException catch (e) {
+      // ⚠️ Errores comunes de autenticación (correo duplicado, contraseña débil, etc.)
       return e.message;
     } catch (e) {
+      // ⚠️ Otros errores inesperados
       return 'Error: $e';
     }
   }

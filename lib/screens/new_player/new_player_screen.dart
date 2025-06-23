@@ -25,6 +25,7 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
   String _name = '';
   int _points = 150;
   String _number = '';
+  bool _isCaptain = false;
 
   final List<PositionType> _selectedPositions = [];
 
@@ -70,7 +71,6 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
             key: _formKey,
             child: Column(
               children: [
-
                 // ✅ Título:
                 Text(
                   'Nuevo jugador',
@@ -81,13 +81,17 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                   ),
                 ),
 
-                SizedBox(height: 20,),
+                SizedBox(height: 20),
 
                 // ✅ Círculo para avatar/foto:
                 CircleAvatar(
                   radius: 80,
                   backgroundColor: AppColors.accentButton,
-                  child: Icon(Icons.camera_alt_outlined, size: 60, color: Colors.black,)
+                  child: Icon(
+                    Icons.camera_alt_outlined,
+                    size: 60,
+                    color: Colors.black,
+                  ),
                 ),
 
                 SizedBox(height: 15),
@@ -139,6 +143,7 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                 ),
 
                 const SizedBox(height: 20),
+                
 
                 //Spacer(),
                 //TODO: Poner este botón al final de la pantalla:

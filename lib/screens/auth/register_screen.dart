@@ -7,6 +7,8 @@ import 'package:football_picker/widgets/custom_textField.dart';
 import 'package:football_picker/services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
