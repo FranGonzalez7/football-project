@@ -25,7 +25,7 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
   String _name = '';
   int _points = 150;
   String _number = '';
-  bool _isCaptain = false;
+  
 
   final List<PositionType> _selectedPositions = [];
 

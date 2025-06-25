@@ -9,67 +9,67 @@ class AuthService {
   /// ✅ Registro creando grupo (admin)
 
   Future<String?> registerWithNewGroup({
-    required String email,
-    required String password,
-    required String groupName,
-    required String groupCode,
-  }) async {
-    try {
-      // 🔍 Verificar que no exista ya un grupo con ese nombre
-      final existingName =
-          await _firestore
-              .collection('groups')
-              .where('name', isEqualTo: groupName)
-              .get();
+  required String email,
+  required String password,
+  required String groupName,
+  required String groupCode,
+}) async {
+  try {
+    print('🟡 Paso 1: Comprobando si el nombre del grupo ya existe');
+    final existingName = await _firestore
+        .collection('groups')
+        .where('name', isEqualTo: groupName)
+        .get();
+    print('✅ Nombre consultado correctamente');
 
-      // 🔍 Verificar que el código del grupo no esté ya en uso
-      final existingCode =
-          await _firestore
-              .collection('groups')
-              .where('code', isEqualTo: groupCode)
-              .get();
+    print('🟡 Paso 2: Comprobando si el código ya existe');
+    final existingCode = await _firestore
+        .collection('groups')
+        .where('code', isEqualTo: groupCode)
+        .get();
+    print('✅ Código consultado correctamente');
 
-      if (existingName.docs.isNotEmpty)
-        return 'Ya existe un grupo con ese nombre';
-      if (existingCode.docs.isNotEmpty)
-        return 'El código ya está en uso, elige otro';
+    if (existingName.docs.isNotEmpty) return 'Ya existe un grupo con ese nombre';
+    if (existingCode.docs.isNotEmpty) return 'El código ya está en uso, elige otro';
 
-      // 🔐 Crear el usuario en Firebase Authentication
-      final userCred = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+    print('🟡 Paso 3: Creando usuario en Firebase Auth');
+    final userCred = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    final uid = userCred.user!.uid;
+    print('✅ Usuario creado correctamente: $uid');
 
-      final uid = userCred.user!.uid;
+    print('🟡 Paso 4: Creando grupo en Firestore');
+    final groupDoc = await _firestore.collection('groups').add({
+      'name': groupName,
+      'code': groupCode.toUpperCase(),
+      'members': [uid],
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+    print('✅ Grupo creado correctamente con ID: ${groupDoc.id}');
 
-      // 🏷️ Crear el nuevo grupo en Firestore y asignar al usuario como primer miembro
-      final groupDoc = await _firestore.collection('groups').add({
-        'name': groupName,
-        'code': groupCode.toUpperCase(),
-        'members': [uid],
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+    print('🟡 Paso 5: Creando documento del usuario');
+    final user = AppUser(
+      uid: uid,
+      email: email,
+      groupId: groupDoc.id,
+      role: 'admin',
+    );
 
-      // 👤 Crear el documento del usuario con rol "admin"
-      final user = AppUser(
-        uid: uid,
-        email: email,
-        groupId: groupDoc.id,
-        role: 'admin', // 🟢 Asignamos el rol de administrador
-      );
+    await _firestore.collection('users').doc(uid).set(user.toMap());
+    print('✅ Usuario guardado en la colección users');
 
-      // 💾 Guardar el usuario en la colección 'users'
-      await _firestore.collection('users').doc(uid).set(user.toMap());
-
-      return null; // ✅ Registro exitoso
-    } on FirebaseAuthException catch (e) {
-      // ⚠️ Errores relacionados con Firebase Auth (correo, contraseña, etc.)
-      return e.message;
-    } catch (e) {
-      // ⚠️ Otros errores inesperados
-      return 'Error: $e';
-    }
+    return null; // todo salió bien
+  } on FirebaseAuthException catch (e) {
+    print('❌ FirebaseAuth error: ${e.message}');
+    return e.message;
+  } catch (e) {
+    print('❌ Otro error: $e');
+    return 'Error: $e';
   }
+}
+
 
   /// ✅ Registro uniéndose a un grupo existente (user)
   Future<String?> registerWithExistingGroup({
