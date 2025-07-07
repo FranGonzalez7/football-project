@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
 import 'package:football_picker/models/position_type.dart';
@@ -13,7 +15,7 @@ class NewPlayerScreen extends StatefulWidget {
   final PlayerService playerService;
 
   const NewPlayerScreen({Key? key, required this.playerService})
-    : super(key: key);
+      : super(key: key);
 
   @override
   State<NewPlayerScreen> createState() => _NewPlayerScreenState();
@@ -25,9 +27,30 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
   String _name = '';
   int _points = 150;
   String _number = '';
-  
+  bool _isAdmin = false;
 
   final List<PositionType> _selectedPositions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+
+  void _loadUserRole() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
+
+    final role = userDoc.data()?['role'];
+    setState(() {
+      _isAdmin = role == 'admin';
+    });
+  }
 
   void _togglePosition(PositionType position) {
     setState(() {
@@ -52,7 +75,7 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
       name: _name,
       position: _selectedPositions.map((p) => positionLabels[p]).join(', '),
       number: int.parse(_number),
-      points: _points,
+      points: _isAdmin ? _points : 150,
       createdBy: '',
     );
 
@@ -71,7 +94,6 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
             key: _formKey,
             child: Column(
               children: [
-                // ✅ Título:
                 Text(
                   'Nuevo jugador',
                   style: TextStyle(
@@ -80,35 +102,26 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
-                SizedBox(height: 20),
-
-                // ✅ Círculo para avatar/foto:
+                const SizedBox(height: 20),
                 CircleAvatar(
                   radius: 80,
                   backgroundColor: AppColors.accentButton,
-                  child: Icon(
+                  child: const Icon(
                     Icons.camera_alt_outlined,
                     size: 60,
                     color: Colors.black,
                   ),
                 ),
-
-                SizedBox(height: 15),
-
-                // ✅ Cuadro para el nombre:
+                const SizedBox(height: 15),
                 CustomTextFormField(
                   title: 'Nombre',
                   onChanged: (value) => _name = value,
-                  validator:
-                      (value) =>
-                          value == null || value.isEmpty ? 'Obligatorio' : null,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Obligatorio' : null,
                 ),
-
-                // ✅ Cuadro para el número:
                 CustomTextFormField(
                   title: 'Número',
-                  keyboardType: TextInputType.number, //❓esto no funciona
+                  keyboardType: TextInputType.number,
                   onChanged: (value) => _number = value,
                   validator: (value) {
                     final parsed = int.tryParse(value ?? '');
@@ -116,37 +129,33 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                     return null;
                   },
                 ),
-
-                SizedBox(height: 10),
-
-                // ✅ Sección para las posiciones:
+                const SizedBox(height: 10),
                 CustomDivider(title: 'Posición'),
                 const SizedBox(height: 8),
                 PositionSelector(
                   selectedPositions: _selectedPositions,
                   onToggle: _togglePosition,
                 ),
-
-                SizedBox(height: 10),
-
-                // ✅ Sección para los stats:
-                CustomDivider(title: 'Stats iniciales'),
-                SizedBox(height: 5),
-
-                StatSlider(
-                  initialValue: _points,
-                  onChanged: (value) {
-                    setState(() {
-                      _points = value;
-                    });
-                  },
-                ),
-
+                const SizedBox(height: 10),
+                if (_isAdmin) ...[
+                  CustomDivider(title: 'Stats iniciales'),
+                  const SizedBox(height: 5),
+                  StatSlider(
+                    initialValue: _points,
+                    onChanged: (value) {
+                      setState(() {
+                        _points = value;
+                      });
+                    },
+                  ),
+                ] else ...[
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Los stats iniciales serán 150 por defecto.',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                ],
                 const SizedBox(height: 20),
-                
-
-                //Spacer(),
-                //TODO: Poner este botón al final de la pantalla:
                 CustomPrimaryButton(text: 'Guardar', onPressed: _savePlayer),
               ],
             ),

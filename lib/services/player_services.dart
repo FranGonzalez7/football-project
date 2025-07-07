@@ -20,11 +20,12 @@ class PlayerService {
     final groupId = await _getGroupId();
     if (groupId == null) return [];
 
-    final snapshot = await _firestore
-        .collection('groups')
-        .doc(groupId)
-        .collection('players')
-        .get();
+    final snapshot =
+        await _firestore
+            .collection('groups')
+            .doc(groupId)
+            .collection('players')
+            .get();
 
     return snapshot.docs
         .map((doc) => Player.fromMap(doc.id, doc.data()))
@@ -51,7 +52,6 @@ class PlayerService {
         .add(playerData);
   }
 
-  // Eliminar un jugador solo si fue creado por el usuario actual
   Future<void> deletePlayer(String playerId) async {
     final uid = _auth.currentUser?.uid;
     final groupId = await _getGroupId();
@@ -60,6 +60,16 @@ class PlayerService {
       throw Exception('Usuario no autenticado o grupo no encontrado');
     }
 
+    // Obtener el rol del usuario actual
+    final userDoc = await _firestore.collection('users').doc(uid).get();
+    final role = userDoc.data()?['role'];
+
+    final isAdmin = role == 'admin';
+    if (!isAdmin) {
+      throw Exception('Solo el administrador puede eliminar jugadores.');
+    }
+
+    // Proceder a eliminar el jugador
     final docRef = _firestore
         .collection('groups')
         .doc(groupId)
@@ -67,12 +77,10 @@ class PlayerService {
         .doc(playerId);
 
     final doc = await docRef.get();
-
-    // Comprobar que el jugador existe y que el usuario es el creador
-    if (doc.exists && doc.data()?['createdBy'] == uid) {
-      await docRef.delete();
-    } else {
-      throw Exception('No tienes permiso para eliminar este jugador.');
+    if (!doc.exists) {
+      throw Exception('Jugador no encontrado.');
     }
+
+    await docRef.delete();
   }
 }
