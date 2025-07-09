@@ -26,7 +26,7 @@ class PositionSelector extends StatelessWidget {
             width: 100,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: selected ? AppColors.accentButton : AppColors.textField,
+              color: selected ? AppColors.primaryButton : AppColors.textFieldBackground,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: selected ? Colors.white : Colors.transparent,

@@ -12,7 +12,7 @@ class CustomTextfield extends StatelessWidget {
     this.obscureText = false,
     this.controller,
     required this.labelText,
-    this.backgroundColor = AppColors.textField,
+    this.backgroundColor = AppColors.textFieldBackground,
   });
 
   @override
@@ -27,7 +27,7 @@ class CustomTextfield extends StatelessWidget {
         labelStyle: TextStyle(color: Colors.white),
         //Relleno del fondo:
         filled: true,
-        fillColor: AppColors.textField,
+        fillColor: AppColors.textFieldBackground,
         //Borde sin foco:
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -36,7 +36,7 @@ class CustomTextfield extends StatelessWidget {
         //Borde con foco:
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide(color: AppColors.accentButton),
+          borderSide: BorderSide(color: AppColors.primaryButton),
         ),
         contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       ),

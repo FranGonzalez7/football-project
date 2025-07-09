@@ -50,10 +50,10 @@ class _StatSliderState extends State<StatSlider> {
       children: [
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: AppColors.accentButton,
+            activeTrackColor: AppColors.primaryButton,
             inactiveTrackColor: Colors.grey.shade300,
             thumbColor: Colors.green,
-            valueIndicatorColor: AppColors.accentButton,
+            valueIndicatorColor: AppColors.primaryButton,
             valueIndicatorTextStyle: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,

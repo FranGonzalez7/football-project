@@ -15,7 +15,7 @@ class CustomTextFormField extends StatelessWidget {
     required this.title,
     this.obscureText = false,
     this.controller,
-    this.backgroundColor = AppColors.textField,
+    this.backgroundColor = AppColors.textFieldBackground,
     this.validator,
     this.onChanged, 
     TextInputType? keyboardType,
@@ -33,7 +33,7 @@ class CustomTextFormField extends StatelessWidget {
           child: Row(
             children: [
               const Expanded(
-                child: Divider(color: AppColors.accentButton, thickness: 1),
+                child: Divider(color: AppColors.primaryButton, thickness: 1),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -46,7 +46,7 @@ class CustomTextFormField extends StatelessWidget {
                 ),
               ),
               const Expanded(
-                child: Divider(color: AppColors.accentButton, thickness: 1),
+                child: Divider(color: AppColors.primaryButton, thickness: 1),
               ),
             ],
           ),
@@ -65,7 +65,7 @@ class CustomTextFormField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),
-              borderSide: const BorderSide(color: AppColors.accentButton),
+              borderSide: const BorderSide(color: AppColors.primaryButton),
             ),
             contentPadding: const EdgeInsets.symmetric(
               vertical: 16,

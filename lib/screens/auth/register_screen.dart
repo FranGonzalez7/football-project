@@ -96,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         SnackBar(
           content: Text(
             'Usuario registrado con éxito',
-            style: TextStyle(color: AppColors.accentButton),
+            style: TextStyle(color: AppColors.primaryButton),
           ),
         ),
       );
@@ -115,9 +115,9 @@ class _RegisterScreenState extends State<RegisterScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: AppColors.accentButton,
+          indicatorColor: AppColors.primaryButton,
           indicatorWeight: 4,
-          labelColor: AppColors.accentButton,
+          labelColor: AppColors.primaryButton,
           unselectedLabelColor: Colors.white70,
           labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           unselectedLabelStyle: TextStyle(

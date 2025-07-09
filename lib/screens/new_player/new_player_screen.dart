@@ -97,7 +97,7 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                 Text(
                   'Nuevo jugador',
                   style: TextStyle(
-                    color: AppColors.accentButton,
+                    color: AppColors.primaryButton,
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
                   ),
@@ -105,7 +105,7 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                 const SizedBox(height: 20),
                 CircleAvatar(
                   radius: 80,
-                  backgroundColor: AppColors.accentButton,
+                  backgroundColor: AppColors.primaryButton,
                   child: const Icon(
                     Icons.camera_alt_outlined,
                     size: 60,

@@ -13,7 +13,7 @@ class CustomPrimaryButton extends StatelessWidget {
       width: double.infinity, // Ocupa todo el ancho disponible
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.accentButton,
+          backgroundColor: AppColors.primaryButton,
           padding: EdgeInsets.symmetric(vertical: 16),
           textStyle: TextStyle(fontSize: 16),),
         onPressed: onPressed, 

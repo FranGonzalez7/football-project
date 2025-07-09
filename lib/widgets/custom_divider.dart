@@ -11,7 +11,7 @@ class CustomDivider extends StatelessWidget {
     return Row(
       children: [
         const Expanded(
-          child: Divider(color: AppColors.accentButton, thickness: 1),
+          child: Divider(color: AppColors.primaryButton, thickness: 1),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -24,7 +24,7 @@ class CustomDivider extends StatelessWidget {
           ),
         ),
         const Expanded(
-          child: Divider(color: AppColors.accentButton, thickness: 1),
+          child: Divider(color: AppColors.primaryButton, thickness: 1),
         ),
       ],
     );

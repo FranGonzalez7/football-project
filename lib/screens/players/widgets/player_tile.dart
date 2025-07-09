@@ -27,7 +27,7 @@ class PlayerTile extends StatelessWidget {
     // ✅ Formato de la Card:
     final tile = Card(
       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      color: AppColors.textField,
+      color: AppColors.textFieldBackground,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
@@ -111,7 +111,7 @@ class PlayerTile extends StatelessWidget {
                                   child: Icon(
                                     getPositionIcon(pos.trim()),
                                     size: 25,
-                                    color: AppColors.accentButton,
+                                    color: AppColors.primaryButton,
                                   ),
                                 ),
                               )

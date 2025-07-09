@@ -171,7 +171,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
           'New Player',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.accentButton,
+        backgroundColor: AppColors.primaryButton,
         foregroundColor: Colors.black,
         elevation: 8,
       ),

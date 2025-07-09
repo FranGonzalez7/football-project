@@ -4,14 +4,19 @@ import 'package:football_picker/app/routes.dart';
 import 'package:football_picker/theme/app_theme.dart';
 import 'firebase_options.dart';
 
+/// 🏁 Punto de entrada principal de la aplicación.
 void main() async {
+  // 🔧 Asegura que los widgets estén correctamente inicializados antes de usar plugins.
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(MyApp());
+
+  // 🚀 Inicializa Firebase con las opciones específicas de la plataforma.
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // 🎬 Lanza la aplicación.
+  runApp(const MyApp());
 }
 
+/// 🧱 Widget raíz de la app.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -20,9 +25,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Football Picker App',
-      theme: AppTheme.regularTheme,
+
+      // 🎨 Tema visual de la aplicación
+      theme: AppTheme.darkTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+
+      // 📍 Ruta inicial
       initialRoute: AppRoutes.login,
-      routes: AppRoutes.routes
+
+      // 🗺️ Mapa de rutas
+      routes: AppRoutes.routes,
     );
   }
 }

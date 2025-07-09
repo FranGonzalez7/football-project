@@ -13,7 +13,7 @@ class CustomSecondaryButton extends StatelessWidget {
       width: double.infinity, // Ocupa todo el ancho disponible
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.textField,
+          backgroundColor: AppColors.textFieldBackground,
           padding: EdgeInsets.symmetric(vertical: 16),
           textStyle: TextStyle(fontSize: 16),),
         onPressed: onPressed, 
