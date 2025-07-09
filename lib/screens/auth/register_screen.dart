@@ -6,6 +6,7 @@ import 'package:football_picker/widgets/custom_secondary_button.dart';
 import 'package:football_picker/widgets/custom_textField.dart';
 import 'package:football_picker/services/auth_service.dart';
 
+/// 📝 Pantalla de registro con opción de crear o unirse a un grupo.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -15,19 +16,17 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
+  final _authService = AuthService();
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // Campos nuevos
   final _groupNameController = TextEditingController();
   final _groupCodeController = TextEditingController();
 
   String? _error;
+  bool _isLoading = false;
 
-  // Control para pestañas Crear / Unirse
   late TabController _tabController;
-
-  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -45,8 +44,13 @@ class _RegisterScreenState extends State<RegisterScreen>
     super.dispose();
   }
 
+  // ────────────────────────────────────────────────────────────────
+  /// 👤 Función que gestiona el registro según el modo activo
   Future<void> _register() async {
-    setState(() => _error = null);
+    setState(() {
+      _error = null;
+      _isLoading = true;
+    });
 
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -55,11 +59,16 @@ class _RegisterScreenState extends State<RegisterScreen>
 
     String? errorMessage;
 
-    //✅ Tab de crear grupo:
     if (_tabController.index == 0) {
-      // Crear grupo
-      if (groupName.isEmpty || groupCode.isEmpty || email.isEmpty || password.isEmpty) {
-        setState(() => _error = 'Introduce campos restantes');
+      // 👥 Crear grupo
+      if (groupName.isEmpty ||
+          groupCode.isEmpty ||
+          email.isEmpty ||
+          password.isEmpty) {
+        setState(() {
+          _error = 'Introduce todos los campos.';
+          _isLoading = false;
+        });
         return;
       }
 
@@ -70,9 +79,12 @@ class _RegisterScreenState extends State<RegisterScreen>
         groupCode: groupCode,
       );
     } else {
-      // Unirse a grupo existente
+      // 🔗 Unirse a grupo
       if (groupCode.isEmpty || email.isEmpty || password.isEmpty) {
-        setState(() => _error = 'Introduce campos restantes');
+        setState(() {
+          _error = 'Introduce todos los campos.';
+          _isLoading = false;
+        });
         return;
       }
 
@@ -84,61 +96,66 @@ class _RegisterScreenState extends State<RegisterScreen>
     }
 
     if (errorMessage != null) {
-      setState(() => _error = errorMessage);
+      setState(() {
+        _error = errorMessage;
+        _isLoading = false;
+      });
     } else {
-      // Limpiar campos
       _emailController.clear();
       _passwordController.clear();
       _groupNameController.clear();
       _groupCodeController.clear();
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Usuario registrado con éxito',
-            style: TextStyle(color: AppColors.primaryButton),
-          ),
-        ),
+        const SnackBar(content: Text('Usuario registrado con éxito')),
       );
-
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
+  // ────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register Screen'),
-        actions: [
-          AppBarMenuButton(),
-        ],
+        title: const Text('Register Screen'),
+        actions: const [AppBarMenuButton()],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.primaryButton,
           indicatorWeight: 4,
           labelColor: AppColors.primaryButton,
           unselectedLabelColor: Colors.white70,
-          labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          unselectedLabelStyle: TextStyle(
+          labelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 14,
+            fontSize: 18,
           ),
-          tabs: [Tab(text: 'Crear grupo'), Tab(text: 'Unirse a grupo')],
+          unselectedLabelStyle: const TextStyle(fontSize: 14),
+          tabs: const [Tab(text: 'Crear grupo'), Tab(text: 'Unirse a grupo')],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Stack(
         children: [
-          // Crear grupo
-          _buildRegisterForm(isCreatingGroup: true),
-          // Unirse a grupo
-          _buildRegisterForm(isCreatingGroup: false),
+          TabBarView(
+            controller: _tabController,
+            children: [
+              _buildRegisterForm(isCreatingGroup: true),
+              _buildRegisterForm(isCreatingGroup: false),
+            ],
+          ),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.6),
+              child: const Center(child: CircularProgressIndicator()),
+            ),
         ],
       ),
     );
   }
 
+  // ────────────────────────────────────────────────────────────────
+  /// 📋 Formulario reutilizable para crear o unirse a un grupo.
   Widget _buildRegisterForm({required bool isCreatingGroup}) {
     return Center(
       child: SingleChildScrollView(
@@ -146,47 +163,38 @@ class _RegisterScreenState extends State<RegisterScreen>
         child: Column(
           children: [
             if (_error != null) ...[
-              Text(_error!, style: TextStyle(color: Colors.red)),
-              SizedBox(height: 12),
+              Text(_error!, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 12),
             ],
-            Text('⚽', style: TextStyle(fontSize: 58)),
-
-            SizedBox(height: 76),
+            const Text('⚽', style: TextStyle(fontSize: 58)),
+            const SizedBox(height: 76),
 
             CustomTextfield(labelText: 'Email', controller: _emailController),
-
-            SizedBox(height: 22),
+            const SizedBox(height: 22),
 
             CustomTextfield(
               labelText: 'Contraseña',
               controller: _passwordController,
               obscureText: true,
             ),
-
-            SizedBox(height: 22),
+            const SizedBox(height: 22),
 
             if (isCreatingGroup) ...[
               CustomTextfield(
                 controller: _groupNameController,
                 labelText: 'Nombre del grupo',
               ),
-              SizedBox(height: 22),
-              CustomTextfield(
-                controller: _groupCodeController,
-                labelText: 'Contraseña del grupo',
-              ),
-            ] else ...[
-              CustomTextfield(
-                controller: _groupCodeController,
-                labelText: 'Código del grupo',
-              ),
+              const SizedBox(height: 22),
             ],
 
-            SizedBox(height: 32),
+            CustomTextfield(
+              controller: _groupCodeController,
+              labelText: 'Código del grupo',
+            ),
+            const SizedBox(height: 32),
 
             CustomPrimaryButton(text: 'Registrarse', onPressed: _register),
-
-            SizedBox(height: 22),
+            const SizedBox(height: 22),
 
             CustomSecondaryButton(
               text: 'Volver a inicio de sesión',
