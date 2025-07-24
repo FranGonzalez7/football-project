@@ -61,20 +61,30 @@ class PlayerTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 📸 Avatar cuadrado con icono placeholder
+              // 🔁 Avatar cuadrado que muestra imagen si existe, si no, icono de cámara
               Container(
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
+                  image:
+                      player.photoUrl != null && player.photoUrl!.isNotEmpty
+                          ? DecorationImage(
+                            image: NetworkImage(player.photoUrl!),
+                            fit: BoxFit.cover,
+                          )
+                          : null,
                 ),
                 alignment: Alignment.center,
-                child: const Icon(
-                  Icons.camera_alt_outlined,
-                  color: Colors.black,
-                  size: 35,
-                ),
+                child:
+                    (player.photoUrl == null || player.photoUrl!.isEmpty)
+                        ? const Icon(
+                          Icons.camera_alt_outlined,
+                          color: Colors.black,
+                          size: 35,
+                        )
+                        : null,
               ),
 
               const SizedBox(width: 16),
@@ -99,35 +109,42 @@ class PlayerTile extends StatelessWidget {
 
                         // ⭐ Iconos según si es propietario o admin
                         if (isOwner && !isAdmin)
-                          const Icon(Icons.star_border, color: Colors.amber, size: 20),
+                          const Icon(
+                            Icons.star_border,
+                            color: Colors.amber,
+                            size: 20,
+                          ),
                         if (!isOwner && isAdmin)
-                          const Icon(Icons.person, color: Colors.amber, size: 20),
+                          const Icon(
+                            Icons.person,
+                            color: Colors.amber,
+                            size: 20,
+                          ),
                       ],
                     ),
                     const SizedBox(height: 6),
 
                     // ⚽ Iconos circulares para posiciones (separadas por coma)
                     Wrap(
-  spacing: 8,
-  runSpacing: 2,
-  children: player.position
-      .split(',')
-      .map((pos) {
-        final positionEnum = positionFromString(pos);
-        return CircleAvatar(
-          radius: 22,
-          backgroundColor: AppColors.background,
-          child: Icon(
-            positionEnum != null
-                ? positionIcons[positionEnum] ?? Icons.help_outline
-                : Icons.help_outline,
-            size: 25,
-            color: AppColors.primaryButton,
-          ),
-        );
-      })
-      .toList(),
-),
+                      spacing: 8,
+                      runSpacing: 2,
+                      children:
+                          player.position.split(',').map((pos) {
+                            final positionEnum = positionFromString(pos);
+                            return CircleAvatar(
+                              radius: 22,
+                              backgroundColor: AppColors.background,
+                              child: Icon(
+                                positionEnum != null
+                                    ? positionIcons[positionEnum] ??
+                                        Icons.help_outline
+                                    : Icons.help_outline,
+                                size: 25,
+                                color: AppColors.primaryButton,
+                              ),
+                            );
+                          }).toList(),
+                    ),
                   ],
                 ),
               ),
@@ -164,20 +181,21 @@ class PlayerTile extends StatelessWidget {
         confirmDismiss: (direction) async {
           return await showDialog<bool>(
             context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Confirmar borrado'),
-              content: Text('¿Eliminar jugador ${player.name}?'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancelar'),
+            builder:
+                (context) => AlertDialog(
+                  title: const Text('Confirmar borrado'),
+                  content: Text('¿Eliminar jugador ${player.name}?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancelar'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Eliminar'),
+                    ),
+                  ],
                 ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Eliminar'),
-                ),
-              ],
-            ),
           );
         },
 

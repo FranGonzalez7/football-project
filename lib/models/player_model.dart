@@ -1,10 +1,11 @@
 class Player {
-  final String id;           // ID del documento en Firestore
-  final String name;         // Nombre del jugador
-  final String position;     // Posición (como String)
-  final int number;          // Número de camiseta
-  final int points;          // Stats o puntos, inicializados a 150 por defecto
-  final String createdBy;    // UserId del creador del jugador
+  final String id;           
+  final String name;         
+  final String position;     
+  final int number;          
+  final int points;          
+  final String createdBy;    
+  final String? photoUrl;
 
   Player({
     required this.id,
@@ -13,9 +14,9 @@ class Player {
     required this.number,
     this.points = 100,
     required this.createdBy,
+    this.photoUrl,
   });
 
-  // Constructor para crear un Player desde un Map (documento Firestore)
   factory Player.fromMap(String id, Map<String, dynamic> data) {
     return Player(
       id: id,
@@ -24,10 +25,10 @@ class Player {
       number: data['number'] ?? 0,
       points: data['points'] ?? 100,
       createdBy: data['createdBy'] ?? '',
+      photoUrl: data['photoUrl'], // puede ser null
     );
   }
 
-  // Convertir Player a Map para guardar en Firestore
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -35,6 +36,7 @@ class Player {
       'number': number,
       'points': points,
       'createdBy': createdBy,
+      if (photoUrl != null) 'photoUrl': photoUrl,
     };
   }
 }
