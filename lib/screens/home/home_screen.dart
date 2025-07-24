@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:football_picker/prueba/upload_avatar_test.dart';
 import 'package:football_picker/services/auth_service.dart';
 import 'package:football_picker/widgets/appbar_menu_button.dart';
 
@@ -107,6 +108,21 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               'Group Code: ${groupCode ?? 'desconocido'}',
               style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+
+            const SizedBox(height: 36,),
+
+            ElevatedButton.icon(
+              icon: const Icon(Icons.upload_file),
+              label: const Text('Probar subida de avatar'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const UploadAvatarTest(),
+                  ),
+                );
+              },
             ),
           ],
         ),
