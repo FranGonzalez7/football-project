@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
-import 'package:football_picker/screens/new_player/widgets/position_icons.dart';
+import 'package:football_picker/models/position_type.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
 class PlayerCard extends StatelessWidget {
@@ -88,20 +88,21 @@ class PlayerCard extends StatelessWidget {
                   spacing: 10,
                   runSpacing: 6,
                   children:
-                      player.position
-                          .split(',')
-                          .map(
-                            (pos) => CircleAvatar(
-                              radius: 22,
-                              backgroundColor: AppColors.background,
-                              child: Icon(
-                                getPositionIcon(pos.trim()),
-                                size: 22,
-                                color: Colors.white,
-                              ),
-                            ),
-                          )
-                          .toList(),
+                      player.position.split(',').map((pos) {
+                        final positionEnum = positionFromString(pos);
+                        return CircleAvatar(
+                          radius: 22,
+                          backgroundColor: AppColors.background,
+                          child: Icon(
+                            positionEnum != null
+                                ? positionIcons[positionEnum] ??
+                                    Icons.help_outline
+                                : Icons.help_outline,
+                            size: 22,
+                            color: Colors.white,
+                          ),
+                        );
+                      }).toList(),
                 ),
               ),
 

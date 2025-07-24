@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
-import 'package:football_picker/screens/new_player/widgets/position_icons.dart';
+import 'package:football_picker/models/position_type.dart';
+
 import 'package:football_picker/screens/players/widgets/player_card.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
+/// 🎯 Widget que representa la tarjeta individual de un jugador en la lista.
+/// Incluye avatar, nombre, posición, puntos y opciones de borrado (si eres admin).
 class PlayerTile extends StatelessWidget {
   final Player player;
   final String currentUserId;
@@ -24,7 +27,7 @@ class PlayerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isOwner = player.createdBy == currentUserId;
 
-    // ✅ Formato de la Card:
+    /// 🎴 Tarjeta principal con diseño estilizado y acción al pulsar
     final tile = Card(
       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       color: AppColors.textFieldBackground,
@@ -32,6 +35,7 @@ class PlayerTile extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () {
+          // 🔍 Mostrar diálogo con información detallada del jugador
           showGeneralDialog(
             context: context,
             barrierDismissible: true,
@@ -57,7 +61,7 @@ class PlayerTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Avatar cuadrado redondeado
+              // 📸 Avatar cuadrado con icono placeholder
               Container(
                 width: 80,
                 height: 80,
@@ -66,15 +70,16 @@ class PlayerTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 alignment: Alignment.center,
-                child: Icon(
+                child: const Icon(
                   Icons.camera_alt_outlined,
                   color: Colors.black,
                   size: 35,
                 ),
               ),
+
               const SizedBox(width: 16),
 
-              // Contenido principal
+              // 📝 Información principal: nombre, iconos de rol y posiciones
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,6 +96,8 @@ class PlayerTile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 5),
+
+                        // ⭐ Iconos según si es propietario o admin
                         if (isOwner && !isAdmin)
                           const Icon(Icons.star_border, color: Colors.amber, size: 20),
                         if (!isOwner && isAdmin)
@@ -98,30 +105,34 @@ class PlayerTile extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
+
+                    // ⚽ Iconos circulares para posiciones (separadas por coma)
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 2,
-                      children:
-                          player.position
-                              .split(',')
-                              .map(
-                                (pos) => CircleAvatar(
-                                  radius: 22,
-                                  backgroundColor: AppColors.background,
-                                  child: Icon(
-                                    getPositionIcon(pos.trim()),
-                                    size: 25,
-                                    color: AppColors.primaryButton,
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                    ),
+  spacing: 8,
+  runSpacing: 2,
+  children: player.position
+      .split(',')
+      .map((pos) {
+        final positionEnum = positionFromString(pos);
+        return CircleAvatar(
+          radius: 22,
+          backgroundColor: AppColors.background,
+          child: Icon(
+            positionEnum != null
+                ? positionIcons[positionEnum] ?? Icons.help_outline
+                : Icons.help_outline,
+            size: 25,
+            color: AppColors.primaryButton,
+          ),
+        );
+      })
+      .toList(),
+),
                   ],
                 ),
               ),
 
-              // Puntos centrados verticalmente
+              // 🎯 Puntuación del jugador, centrada verticalmente
               SizedBox(
                 height: 75,
                 child: Center(
@@ -137,7 +148,7 @@ class PlayerTile extends StatelessWidget {
       ),
     );
 
-    // ✅ Lógica y formato para el desplegable para borrar jugador:
+    /// 🗑️ Si es admin y hay callback para borrar, envolver en Dismissible para swipe-to-delete
     if (isAdmin && onDelete != null) {
       return Dismissible(
         key: Key(player.id),
@@ -149,27 +160,27 @@ class PlayerTile extends StatelessWidget {
           child: const Icon(Icons.delete, color: Colors.white),
         ),
 
-        // ✅ Lógica y formato del cuadro de texto para confirmar el borrado:
+        // 🔒 Confirmar borrado con diálogo antes de eliminar
         confirmDismiss: (direction) async {
           return await showDialog<bool>(
             context: context,
-            builder:
-                (context) => AlertDialog(
-                  title: const Text('Confirmar borrado'),
-                  content: Text('¿Eliminar jugador ${player.name}?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text('Cancelar'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text('Eliminar'),
-                    ),
-                  ],
+            builder: (context) => AlertDialog(
+              title: const Text('Confirmar borrado'),
+              content: Text('¿Eliminar jugador ${player.name}?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Cancelar'),
                 ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text('Eliminar'),
+                ),
+              ],
+            ),
           );
         },
+
         onDismissed: (direction) => onDelete!(),
         child: tile,
       );

@@ -43,9 +43,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final result = await _authService.login(email: email, password: password);
 
     if (result == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inicio de sesión exitoso')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Inicio de sesión exitoso')));
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/home');
     } else {
@@ -76,11 +76,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    if (_error != null) ...[
-                      Text(_error!, style: const TextStyle(color: Colors.red)),
-                      const SizedBox(height: 8),
-                    ],
-
                     const Text(
                       'Welcome to the Game',
                       style: TextStyle(
@@ -91,6 +86,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const Text('⚽', style: TextStyle(fontSize: 58)),
                     const SizedBox(height: 102),
+
+                    if (_error != null) ...[
+                      Text(_error!, style: const TextStyle(color: Colors.red)),
+                      const SizedBox(height: 8),
+                    ],
+
+                    const SizedBox(height: 22),
 
                     CustomTextfield(
                       labelText: 'Email',
@@ -127,9 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.6),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: const Center(child: CircularProgressIndicator()),
             ),
         ],
       ),

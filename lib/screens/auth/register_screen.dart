@@ -162,12 +162,15 @@ class _RegisterScreenState extends State<RegisterScreen>
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            
+            const Text('⚽', style: TextStyle(fontSize: 58)),
+            const SizedBox(height: 76),
+
             if (_error != null) ...[
               Text(_error!, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 12),
             ],
-            const Text('⚽', style: TextStyle(fontSize: 58)),
-            const SizedBox(height: 76),
+            const SizedBox(height: 22),
 
             CustomTextfield(labelText: 'Email', controller: _emailController),
             const SizedBox(height: 22),
