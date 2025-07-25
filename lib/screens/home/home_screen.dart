@@ -1,14 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:football_picker/prueba/upload_avatar_test.dart';
 import 'package:football_picker/services/auth_service.dart';
 import 'package:football_picker/widgets/appbar_menu_button.dart';
+import 'package:football_picker/widgets/appbottom_navigationbar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
-  
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -18,7 +16,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String? groupName;
   String? groupCode;
   bool isLoading = true;
-  
+  int _selectedIndex = 2; // Home por defecto
+
   final AuthService _authService = AuthService();
 
   @override
@@ -27,32 +26,58 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadGroupName();
   }
 
-  void _logout() async {
-  final confirm = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Cerrar sesión'),
-      content: const Text('¿Seguro que quieres cerrar sesión?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancelar'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('Salir'),
-        ),
-      ],
-    ),
-  );
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
 
-  if (confirm == true) {
-    await _authService.logout(); // ✅ uso del servicio
-    if (!mounted) return;
-    Navigator.of(context).pushReplacementNamed('/login'); // ⚠️ Asegúrate de tener esta ruta definida
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/players');
+        break;
+      case 1:
+        //Navigator.pushNamed(context, '/matches');
+        break;
+      case 2:
+        // Ya estás en Home, quizás no haces nada
+        break;
+      case 3:
+        //Navigator.pushNamed(context, '/ranking');
+        break;
+      case 4:
+        //Navigator.pushNamed(context, '/settings');
+        break;
+    }
   }
-}
 
+  void _logout() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Cerrar sesión'),
+            content: const Text('¿Seguro que quieres cerrar sesión?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Salir'),
+              ),
+            ],
+          ),
+    );
+
+    if (confirm == true) {
+      await _authService.logout(); // ✅ uso del servicio
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed(
+        '/login',
+      ); // ⚠️ Asegúrate de tener esta ruta definida
+    }
+  }
 
   Future<void> _loadGroupName() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -110,52 +135,13 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(fontSize: 20, color: Colors.white),
             ),
 
-            const SizedBox(height: 36,),
-
-            ElevatedButton.icon(
-              icon: const Icon(Icons.upload_file),
-              label: const Text('Probar subida de avatar'),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const UploadAvatarTest(),
-                  ),
-                );
-              },
-            ),
+            const SizedBox(height: 36),
           ],
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.sports_soccer_outlined),
-              ),
-            ),
-            Expanded(
-              child: IconButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/players');
-                },
-                icon: Icon(Icons.people),
-              ),
-            ),
-            Expanded(
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.space_dashboard_outlined),
-              ),
-            ),
-            Expanded(
-              child: IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
-            ),
-          ],
-        ),
+      bottomNavigationBar: AppBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }

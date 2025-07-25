@@ -13,6 +13,7 @@ import 'package:football_picker/screens/players/widgets/player_sort_menu.dart';
 import 'package:football_picker/screens/players/widgets/player_tile.dart';
 
 import 'package:football_picker/theme/app_colors.dart';
+import 'package:football_picker/widgets/appbottom_navigationbar.dart'; // 🆕 Añadir el import
 
 /// 🎮 Pantalla principal para mostrar y gestionar los jugadores.
 class PlayerScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _isLoading = true;
 
   PlayerSortOption _currentSort = PlayerSortOption.nameAsc;
+  int _selectedIndex = 0; // 📍 "Players" tab
 
   @override
   void initState() {
@@ -131,6 +133,29 @@ class _PlayerScreenState extends State<PlayerScreen> {
     }
   }
 
+  /// 🌐 Navegación entre secciones
+  void _onItemTapped(int index) {
+    if (index == _selectedIndex) return;
+
+    switch (index) {
+      case 0:
+        // Ya estamos en Players
+        break;
+      case 1:
+        //Navigator.pushNamed(context, '/matches');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/home');
+        break;
+      case 3:
+        //Navigator.pushNamed(context, '/ranking');
+        break;
+      case 4:
+        //Navigator.pushNamed(context, '/settings');
+        break;
+    }
+  }
+
   // ────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
@@ -182,6 +207,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
         backgroundColor: AppColors.primaryButton,
         foregroundColor: Colors.black,
         elevation: 8,
+      ),
+
+      /// 🧭 Barra inferior de navegación
+      bottomNavigationBar: AppBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }

@@ -23,20 +23,23 @@ class AppTheme {
       iconTheme: IconThemeData(color: Colors.white),
     ),
 
-    // 📦 BottomAppBar
-    bottomAppBarTheme: const BottomAppBarTheme(
-      color: AppColors.textFieldBackground, // Asegúrate de que este nombre esté en AppColors
+    // 📦 BottomNavigationAppBar
+    
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: AppColors.background,
+      selectedItemColor: AppColors.primaryButton,
+      unselectedItemColor: Colors.white70,
+      selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+      unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
+      elevation: 10,
+      type: BottomNavigationBarType.fixed,
     ),
 
     // 🔘 Iconos
-    iconTheme: const IconThemeData(
-      color: Colors.white,
-    ),
+    iconTheme: const IconThemeData(color: Colors.white),
 
     // 🖊️ Estilo de texto
-    textTheme: const TextTheme(
-      bodyMedium: TextStyle(color: Colors.white),
-    ),
+    textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
   );
 
   // ────────────────────────────────────────────────────────────────
@@ -61,19 +64,13 @@ class AppTheme {
     ),
 
     // 📦 BottomAppBar
-    bottomAppBarTheme: BottomAppBarTheme(
-      color: Colors.grey[200],
-    ),
+    bottomAppBarTheme: BottomAppBarTheme(color: Colors.grey[200]),
 
     // 🔘 Iconos
-    iconTheme: const IconThemeData(
-      color: Colors.black87,
-    ),
+    iconTheme: const IconThemeData(color: Colors.black87),
 
     // 🖊️ Estilo de texto
-    textTheme: const TextTheme(
-      bodyMedium: TextStyle(color: Colors.black87),
-    ),
+    textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.black87)),
 
     // ✏️ Campos de entrada
     inputDecorationTheme: InputDecorationTheme(
