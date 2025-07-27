@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:football_picker/services/auth_service.dart';
+import 'package:football_picker/theme/app_colors.dart';
 import 'package:football_picker/widgets/appbar_menu_button.dart';
 import 'package:football_picker/widgets/appbottom_navigationbar.dart';
 
@@ -124,19 +125,66 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Center(
-        child: Column(
-          children: [
-            Text(
-              'Welcome to ${groupName ?? 'desconocido'}',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-            Text(
-              'Group Code: ${groupCode ?? 'desconocido'}',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // 🟦 Primer bloque
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.primaryButton),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize:
+                          MainAxisSize
+                              .min, // 👈 evita que Column expanda todo el alto
+                      children: [
+                        Text(
+                          'Welcome to ${groupName ?? 'desconocido'}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryButton,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Group Code: ${groupCode ?? 'desconocido'}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: AppColors.primaryButton,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
 
-            const SizedBox(height: 36),
-          ],
+              SizedBox(height: 16),
+              // 🟩 Segundo bloque
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.primaryButton),
+                  ),
+                  child: const Center(child: Text('Bloque 2')),
+                ),
+              ),
+              SizedBox(height: 16),
+              // 🟥 Tercer bloque
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.primaryButton),
+                  ),
+                  child: const Center(child: Text('Bloque 3')),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: AppBottomNavigationBar(
