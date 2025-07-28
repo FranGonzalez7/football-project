@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:football_picker/screens/home/widgets/container1_groupInfoCard.dart';
+import 'package:football_picker/screens/home/widgets/container2_nextMatchCard.dart';
+import 'package:football_picker/screens/home/widgets/container3_playerStatsCard.dart';
 import 'package:football_picker/services/auth_service.dart';
-import 'package:football_picker/theme/app_colors.dart';
 import 'package:football_picker/widgets/appbar_menu_button.dart';
 import 'package:football_picker/widgets/appbottom_navigationbar.dart';
 
@@ -124,69 +126,42 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // 🟦 Primer bloque
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.primaryButton),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize:
-                          MainAxisSize
-                              .min, // 👈 evita que Column expanda todo el alto
-                      children: [
-                        Text(
-                          'Welcome to ${groupName ?? 'desconocido'}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primaryButton,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Group Code: ${groupCode ?? 'desconocido'}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: AppColors.primaryButton,
-                          ),
-                        ),
-                      ],
+      body: Stack(
+        children: [
+          // Imagen de fondo
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/cesped.jpg', // ⬅️ asegúrate de que esta ruta coincida con tu asset
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Capa oscura translúcida opcional
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.1)),
+          ),
+          // Contenido original
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: GroupInfoCard(
+                      groupName: groupName ?? 'desconocido',
+                      groupCode: groupCode ?? 'desconocido',
                     ),
                   ),
-                ),
+                  const SizedBox(height: 18),
+                  Expanded(child: NextMatchCard()),
+                  const SizedBox(height: 18),
+                  Expanded(child: PlayerStatsCard()),
+                ],
               ),
-
-              SizedBox(height: 16),
-              // 🟩 Segundo bloque
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.primaryButton),
-                  ),
-                  child: const Center(child: Text('Bloque 2')),
-                ),
-              ),
-              SizedBox(height: 16),
-              // 🟥 Tercer bloque
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.primaryButton),
-                  ),
-                  child: const Center(child: Text('Bloque 3')),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
+
       bottomNavigationBar: AppBottomNavigationBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
