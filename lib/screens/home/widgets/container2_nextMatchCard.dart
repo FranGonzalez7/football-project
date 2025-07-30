@@ -45,7 +45,7 @@ class NextMatchCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primaryButton,
+                color: Colors.white,
               ),
             ),
           ),

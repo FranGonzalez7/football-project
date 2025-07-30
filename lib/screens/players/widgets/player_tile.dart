@@ -31,7 +31,7 @@ class PlayerTile extends StatelessWidget {
     final tile = Card(
       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       color: AppColors.textFieldBackground,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () {
@@ -155,7 +155,7 @@ class PlayerTile extends StatelessWidget {
                 child: Center(
                   child: Text(
                     '${player.points} pts',
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                    style: const TextStyle(fontSize: 22, color: Colors.white),
                   ),
                 ),
               ),

@@ -34,7 +34,7 @@ class GroupInfoCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primaryButton,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -42,7 +42,7 @@ class GroupInfoCard extends StatelessWidget {
                   'Group Code: $groupCode',
                   style: const TextStyle(
                     fontSize: 18,
-                    color: AppColors.primaryButton,
+                    color: Colors.white,
                   ),
                 ),
                   ],
@@ -63,7 +63,7 @@ class GroupInfoCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primaryButton,
+                color: Colors.white,
               ),
             ),
           ),
