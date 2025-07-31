@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:football_picker/models/player_model.dart';
 import 'package:football_picker/screens/new_match/widgets/player_bubble_down.dart';
 import 'package:football_picker/screens/new_match/widgets/player_bubble_up.dart';
 import 'package:football_picker/screens/new_match/widgets/player_selector_list.dart';
+import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/theme/app_colors.dart';
 import 'package:football_picker/widgets/custom_primary_button.dart';
 
-class NewMatchScreen extends StatelessWidget {
+class NewMatchScreen extends StatefulWidget {
   const NewMatchScreen({super.key});
+
+  @override
+  State<NewMatchScreen> createState() => _NewMatchScreenState();
+}
+
+class _NewMatchScreenState extends State<NewMatchScreen> {
+  late Future<List<Player>> _playersFuture;
+  final PlayerService _playerService = PlayerService();
+
+  @override
+  void initState() {
+    super.initState();
+    _playersFuture = _playerService.getPlayers();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +38,6 @@ class NewMatchScreen extends StatelessWidget {
         top: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
               child: Padding(
@@ -31,7 +46,6 @@ class NewMatchScreen extends StatelessWidget {
                   aspectRatio: 16 / 9,
                   child: Stack(
                     children: [
-                      // Imagen del campo
                       Positioned.fill(
                         child: Image.asset(
                           'assets/images/field.png',
@@ -39,7 +53,7 @@ class NewMatchScreen extends StatelessWidget {
                         ),
                       ),
 
-                      // Jugador 1 (posición fija relativa al campo)
+                      // Burbujas estáticas de ejemplo
                       Positioned(
                         left: 196,
                         top: 16,
@@ -65,8 +79,6 @@ class NewMatchScreen extends StatelessWidget {
                         top: 181,
                         child: PlayerBubbleUp(color: upperTeam, number: '5'),
                       ),
-
-                      // Jugador 2
                       Positioned(
                         left: 196,
                         bottom: 16,
@@ -98,14 +110,11 @@ class NewMatchScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 5,),
+            const SizedBox(height: 5),
             Container(
               height: 220,
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                
-              ),
+              color: AppColors.background,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -115,11 +124,34 @@ class NewMatchScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
-                  PlayerSelectorList(),
+                  FutureBuilder<List<Player>>(
+                    future: _playersFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return const Text('Error cargando jugadores');
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Text('No hay jugadores disponibles');
+                      } else {
+                        final players = snapshot.data!;
+                        return PlayerSelectorList(
+                          players: players,
+                          playerColors: {
+                            for (var p in players)
+                              p.id: lowerTeam, // o decide color dinámico
+                          },
+                        );
+                      }
+                    },
+                  ),
                   const Spacer(),
-                  CustomPrimaryButton(text: 'Comenzar Partido', onPressed: () {
-                    
-                  },)
+                  CustomPrimaryButton(
+                    text: 'Comenzar Partido',
+                    onPressed: () {
+                      // Aún sin funcionalidad
+                    },
+                  ),
                 ],
               ),
             ),

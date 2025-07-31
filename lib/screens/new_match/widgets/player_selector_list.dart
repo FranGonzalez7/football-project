@@ -1,26 +1,47 @@
 import 'package:flutter/material.dart';
-import 'player_selector_bubble.dart'; // Asegúrate de tener este widget o eliminarlo si no lo usas
+import 'package:football_picker/models/player_model.dart';
+import 'package:football_picker/screens/new_match/widgets/player_selector_bubble.dart';
 
-class PlayerSelectorList extends StatelessWidget {
-  const PlayerSelectorList({super.key});
+class PlayerSelectorList extends StatefulWidget {
+  final List<Player> players;
+  final Map<String, Color> playerColors; // map id jugador a color equipo
+
+  const PlayerSelectorList({
+    super.key,
+    required this.players,
+    required this.playerColors,
+  });
+
+  @override
+  State<PlayerSelectorList> createState() => _PlayerSelectorListState();
+}
+
+class _PlayerSelectorListState extends State<PlayerSelectorList> {
+  String? selectedPlayerId;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 60,
-      child: ListView(
+      height: 80,
+      child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        children: const [
-          PlayerSelectorBubble(number: '1', color: Colors.red),
-          PlayerSelectorBubble(number: '2', color: Colors.yellow),
-          PlayerSelectorBubble(number: '3', color: Colors.purple),
-          PlayerSelectorBubble(number: '4', color: Colors.blue),
-          PlayerSelectorBubble(number: '5', color: Colors.orange),
-          PlayerSelectorBubble(number: '6', color: Colors.green),
-          PlayerSelectorBubble(number: '7', color: Colors.lightBlueAccent),
-          PlayerSelectorBubble(number: '8', color: Colors.black),
-          PlayerSelectorBubble(number: '9', color: Colors.grey),
-        ],
+        itemCount: widget.players.length,
+        itemBuilder: (context, index) {
+          final player = widget.players[index];
+          final color = widget.playerColors[player.id] ?? Colors.grey;
+          final isSelected = selectedPlayerId == player.id;
+
+          return PlayerSelectorBubble(
+            player: player,
+            color: color,
+            isSelected: isSelected,
+            onTap: () {
+              setState(() {
+                selectedPlayerId = player.id;
+              });
+            },
+          );
+        },
       ),
     );
   }
