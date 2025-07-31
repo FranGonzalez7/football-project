@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/screens/new_match/widgets/player_bubble_down.dart';
 import 'package:football_picker/screens/new_match/widgets/player_bubble_up.dart';
-import 'package:football_picker/screens/new_match/widgets/player_selector_bubble.dart';
+import 'package:football_picker/screens/new_match/widgets/player_selector_list.dart';
 import 'package:football_picker/theme/app_colors.dart';
 import 'package:football_picker/widgets/custom_primary_button.dart';
 
@@ -111,27 +111,11 @@ class NewMatchScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Seleccionar jugadores',
+                    textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    height: 60,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: const [
-                        PlayerSelectorBubble(number: '1', color: Colors.red),
-                        PlayerSelectorBubble(number: '2', color: Colors.yellow),
-                        PlayerSelectorBubble(number: '3', color: Colors.purple),
-                        PlayerSelectorBubble(number: '4', color: Colors.blue),
-                        PlayerSelectorBubble(number: '5', color: Colors.orange),
-                        PlayerSelectorBubble(number: '6', color: Colors.green),
-                        PlayerSelectorBubble(number: '7', color: Colors.lightBlueAccent),
-                        PlayerSelectorBubble(number: '8', color: Colors.black),
-                        PlayerSelectorBubble(number: '9', color: Colors.grey),
-                        
-                      ],
-                    ),
-                  ),
+                  PlayerSelectorList(),
                   const Spacer(),
                   CustomPrimaryButton(text: 'Comenzar Partido', onPressed: () {
                     
