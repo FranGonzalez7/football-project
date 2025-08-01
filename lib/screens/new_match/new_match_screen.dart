@@ -31,7 +31,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nuevo Partido'),
+        title: const Text('5 vs 5'),
         backgroundColor: AppColors.background,
       ),
       body: SafeArea(
@@ -110,7 +110,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
               ),
             ),
 
-            const SizedBox(height: 5),
+            //const SizedBox(height: 5),
             Container(
               height: 220,
               padding: const EdgeInsets.all(16),
@@ -120,8 +120,8 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                 children: [
                   const Text(
                     'Seleccionar jugadores',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
                   FutureBuilder<List<Player>>(

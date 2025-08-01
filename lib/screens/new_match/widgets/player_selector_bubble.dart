@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
-
+import 'package:football_picker/screens/players/widgets/player_card.dart';
 
 class PlayerSelectorBubble extends StatelessWidget {
   final Player player;
@@ -20,6 +20,12 @@ class PlayerSelectorBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onDoubleTap: () {
+        showDialog(
+          context: context,
+          builder: (_) => PlayerCard(player: player),
+        );
+      },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -35,23 +41,25 @@ class PlayerSelectorBubble extends StatelessWidget {
                 color: Colors.white,
                 width: isSelected ? 3 : 2,
               ),
-              image: player.photoUrl != null
-                  ? DecorationImage(
-                      image: NetworkImage(player.photoUrl!),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
+              image:
+                  player.photoUrl != null
+                      ? DecorationImage(
+                        image: NetworkImage(player.photoUrl!),
+                        fit: BoxFit.cover,
+                      )
+                      : null,
             ),
             alignment: Alignment.center,
-            child: player.photoUrl == null
-                ? Text(
-                    player.number.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                : null,
+            child:
+                player.photoUrl == null
+                    ? Text(
+                      player.number.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                    : null,
           ),
           if (isSelected) ...[
             const SizedBox(height: 4),
@@ -63,10 +71,7 @@ class PlayerSelectorBubble extends StatelessWidget {
               ),
               child: Text(
                 player.name,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Colors.white,
-                ),
+                style: const TextStyle(fontSize: 11, color: Colors.white),
               ),
             ),
           ],
