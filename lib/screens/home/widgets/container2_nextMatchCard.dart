@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:football_picker/screens/new_match/widgets/matches_preview.dart';
+import 'package:football_picker/services/auth_service.dart';
+import 'package:football_picker/services/match_services.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
 class NextMatchCard extends StatelessWidget {
@@ -16,22 +19,104 @@ class NextMatchCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.sports_soccer),
-              label: const Text('5 vs 5'),
-              onPressed: () {
-                Navigator.pushNamed(context, '/newMatch5');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryButton,
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(flex: 3, child: MatchesPreview()),
+              const SizedBox(width: 16),
+              const VerticalDivider(
+                width: 20,
+                thickness: 0.5,
+                color: Colors.grey,
+              ),
+              Flexible(
+                flex: 2,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Spacer(),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.sports_soccer),
+                        label: const Text('5 vs 5'),
+                        onPressed: () async {
+                          final appUser = await AuthService().getCurrentUser();
+                          if (appUser == null) return;
+
+                          final existingMatch = await MatchService()
+                              .getUnstartedMatch(appUser.groupId);
+
+                          String matchId;
+
+                          if (existingMatch != null) {
+                            matchId = existingMatch.id;
+                          } else {
+                            matchId = await MatchService().createMatch(
+                              createdBy: appUser.uid,
+                              groupId: appUser.groupId,
+                            );
+                          }
+
+                          if (context.mounted) {
+                            Navigator.pushNamed(
+                              context,
+                              '/newMatch5',
+                              arguments: {
+                                'matchId': matchId,
+                                'groupId': appUser.groupId,
+                              },
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryButton,
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+
+                      Spacer(),
+
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.sports_soccer),
+                        label: const Text('6 vs 6'),
+                        onPressed: () {},
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+
+                      Spacer(),
+
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.sports_soccer),
+                        label: const Text('7 vs 7'),
+                        onPressed: () {},
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+
+                      Spacer(),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
         Positioned(

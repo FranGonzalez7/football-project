@@ -1,49 +1,79 @@
+// 📁 match_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// 📝 Modelo que representa un partido de fútbol.
+///
+/// Cada partido tiene un creador, una fecha, dos equipos de jugadores,
+/// una marca si ha finalizado o no, y un grupo al que pertenece.
+class Match {
+  /// 🆔 ID único del partido (usado como ID del documento en Firestore).
+  final String id;
 
-//TODO afinar este model con los datos necesarios
-/// Representa un partido de fútbol creado en la app.
-class MatchModel {
-  final String id;            // ID único del partido (igual al ID del documento en Firestore)
-  final DateTime date;        // Fecha del partido
-  final int playersPerTeam;   // Número de jugadores por equipo (por ejemplo, 5 para 5 vs 5)
-  final List<String> teamAPlayers;  // Lista de IDs de jugadores del equipo A
-  final List<String> teamBPlayers;  // Lista de IDs de jugadores del equipo B
-  final String createdBy;     // UID del usuario que creó el partido
-  final String groupId;       // ID del grupo al que pertenece este partido
+  /// 👤 UID del usuario que ha creado el partido.
+  final String createdBy;
 
-  /// Constructor del modelo
-  MatchModel({
+  /// 🕒 Fecha y hora de creación del partido.
+  final DateTime createdAt;
+
+  /// 🔴 Lista de IDs de jugadores del equipo A (por ejemplo, rojo).
+  final List<String> playersTeamA;
+
+  /// 🔵 Lista de IDs de jugadores del equipo B (por ejemplo, azul).
+  final List<String> playersTeamB;
+
+  /// ✅ Indican si el partido ha terminado o ha empezado.
+  final bool isFinished;
+  final bool hasStarted;
+
+  /// 👥 ID del grupo al que pertenece este partido.
+  final String groupId;
+
+  Match({
     required this.id,
-    required this.date,
-    required this.playersPerTeam,
-    required this.teamAPlayers,
-    required this.teamBPlayers,
     required this.createdBy,
+    required this.createdAt,
+    required this.playersTeamA,
+    required this.playersTeamB,
+    required this.isFinished,
+    required this.hasStarted,
     required this.groupId,
   });
 
-  /// Crea un objeto MatchModel desde un mapa (por ejemplo, desde Firestore)
-  factory MatchModel.fromMap(String id, Map<String, dynamic> data) {
-    return MatchModel(
+  /// 🔁 Crea una instancia de `Match` desde un documento de Firestore.
+  factory Match.fromMap(String id, Map<String, dynamic> map) {
+    final createdAtRaw = map['createdAt'];
+    final Timestamp timestamp =
+        createdAtRaw is Timestamp
+            ? createdAtRaw
+            : Timestamp.now(); // ⛑️ fallback de seguridad
+
+    return Match(
       id: id,
-      date: (data['date'] as Timestamp).toDate(), // Convierte Timestamp a DateTime
-      playersPerTeam: data['playersPerTeam'],
-      teamAPlayers: List<String>.from(data['teamAPlayers']),
-      teamBPlayers: List<String>.from(data['teamBPlayers']),
-      createdBy: data['createdBy'],
-      groupId: data['groupId'],
+      createdBy: map['createdBy'] ?? '',
+      createdAt: timestamp.toDate(),
+      playersTeamA:
+          map['playersTeamA'] != null
+              ? List<String>.from(map['playersTeamA'])
+              : <String>[],
+      playersTeamB:
+          map['playersTeamB'] != null
+              ? List<String>.from(map['playersTeamB'])
+              : <String>[],
+      isFinished: map['isFinished'] ?? false,
+      hasStarted: map['hasStarted'] ?? false,
+      groupId: map['groupId'] ?? '',
     );
   }
 
-  /// Convierte el objeto en un mapa para guardarlo en Firestore
+  /// 🧭 Convierte el objeto `Match` en un mapa para guardarlo en Firestore.
   Map<String, dynamic> toMap() {
     return {
-      'date': date, // Firestore lo convierte automáticamente a Timestamp
-      'playersPerTeam': playersPerTeam,
-      'teamAPlayers': teamAPlayers,
-      'teamBPlayers': teamBPlayers,
       'createdBy': createdBy,
+      'createdAt': createdAt,
+      'playersTeamA': playersTeamA,
+      'playersTeamB': playersTeamB,
+      'isFinished': isFinished,
+      'hasStarted': hasStarted,
       'groupId': groupId,
     };
   }

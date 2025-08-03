@@ -20,19 +20,23 @@ class AuthService {
   }) async {
     try {
       // 🔍 Verificar si ya existe un grupo con ese nombre
-      final existingName = await _firestore
-          .collection('groups')
-          .where('name', isEqualTo: groupName)
-          .get();
+      final existingName =
+          await _firestore
+              .collection('groups')
+              .where('name', isEqualTo: groupName)
+              .get();
 
       // 🔍 Verificar si el código de grupo ya está en uso
-      final existingCode = await _firestore
-          .collection('groups')
-          .where('code', isEqualTo: groupCode)
-          .get();
+      final existingCode =
+          await _firestore
+              .collection('groups')
+              .where('code', isEqualTo: groupCode)
+              .get();
 
-      if (existingName.docs.isNotEmpty) return 'Ya existe un grupo con ese nombre';
-      if (existingCode.docs.isNotEmpty) return 'El código ya está en uso, elige otro';
+      if (existingName.docs.isNotEmpty)
+        return 'Ya existe un grupo con ese nombre';
+      if (existingCode.docs.isNotEmpty)
+        return 'El código ya está en uso, elige otro';
 
       // 🔐 Crear usuario en Firebase Authentication
       final userCred = await _auth.createUserWithEmailAndPassword(
@@ -80,11 +84,12 @@ class AuthService {
   }) async {
     try {
       // 🔍 Buscar grupo por código (normalizado a mayúsculas)
-      final query = await _firestore
-          .collection('groups')
-          .where('code', isEqualTo: groupCode.toUpperCase())
-          .limit(1)
-          .get();
+      final query =
+          await _firestore
+              .collection('groups')
+              .where('code', isEqualTo: groupCode.toUpperCase())
+              .limit(1)
+              .get();
 
       if (query.docs.isEmpty) return 'El código no corresponde a ningún grupo';
 
@@ -137,10 +142,7 @@ class AuthService {
     required String password,
   }) async {
     try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
       return null; // ✅ Login exitoso
     } on FirebaseAuthException catch (e) {
       return e.message;
@@ -153,5 +155,19 @@ class AuthService {
   /// 🔓 Cerrar sesión del usuario actual.
   Future<void> logout() async {
     await _auth.signOut();
+  }
+
+  /// 📥 Obtiene el AppUser actual a partir del UID logueado.
+  ///
+  /// Retorna `null` si no hay sesión iniciada o no encuentra los datos en Firestore.
+  Future<AppUser?> getCurrentUser() async {
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return null;
+
+    final userDoc =
+        await _firestore.collection('users').doc(currentUser.uid).get();
+    if (!userDoc.exists) return null;
+
+    return AppUser.fromMap(currentUser.uid, userDoc.data()!);
   }
 }

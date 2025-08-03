@@ -128,33 +128,31 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Stack(
         children: [
-          // Imagen de fondo
+          // Fondo
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/cesped.jpg', // ⬅️ asegúrate de que esta ruta coincida con tu asset
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/cesped.jpg', fit: BoxFit.cover),
           ),
-          // Capa oscura translúcida opcional
+          // Capa oscura encima
           Positioned.fill(
             child: Container(color: Colors.black.withOpacity(0.1)),
           ),
-          // Contenido original
-          Center(
+          // Contenido dividido proporcionalmente
+          SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(30.0),
               child: Column(
                 children: [
                   Expanded(
+                    flex: 1,
                     child: GroupInfoCard(
                       groupName: groupName ?? 'desconocido',
                       groupCode: groupCode ?? 'desconocido',
                     ),
                   ),
                   const SizedBox(height: 18),
-                  Expanded(child: NextMatchCard()),
+                  Expanded(flex: 2, child: const NextMatchCard()),
                   const SizedBox(height: 18),
-                  Expanded(child: PlayerStatsCard()),
+                  Expanded(flex: 2, child: const PlayerStatsCard()),
                 ],
               ),
             ),

@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
 
       // 🗺️ Mapa de rutas
       routes: AppRoutes.routes,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }

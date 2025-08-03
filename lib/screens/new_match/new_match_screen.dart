@@ -3,12 +3,20 @@ import 'package:football_picker/models/player_model.dart';
 import 'package:football_picker/screens/new_match/widgets/player_bubble_down.dart';
 import 'package:football_picker/screens/new_match/widgets/player_bubble_up.dart';
 import 'package:football_picker/screens/new_match/widgets/player_selector_list.dart';
+import 'package:football_picker/services/match_services.dart';
 import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/theme/app_colors.dart';
 import 'package:football_picker/widgets/custom_primary_button.dart';
 
 class NewMatchScreen extends StatefulWidget {
-  const NewMatchScreen({super.key});
+  final String groupId;
+  final String matchId;
+
+  const NewMatchScreen({
+    super.key,
+    required this.groupId,
+    required this.matchId,
+  });
 
   @override
   State<NewMatchScreen> createState() => _NewMatchScreenState();
@@ -110,7 +118,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
               ),
             ),
 
-            //const SizedBox(height: 5),
+            // Panel inferior con selector y botón
             Container(
               height: 220,
               padding: const EdgeInsets.all(16),
@@ -120,7 +128,6 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                 children: [
                   const Text(
                     'Seleccionar jugadores',
-                    
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
@@ -139,7 +146,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                           players: players,
                           playerColors: {
                             for (var p in players)
-                              p.id: lowerTeam, // o decide color dinámico
+                              p.id: lowerTeam, // o lógica futura
                           },
                         );
                       }
@@ -148,8 +155,17 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                   const Spacer(),
                   CustomPrimaryButton(
                     text: 'Comenzar Partido',
-                    onPressed: () {
-                      // Aún sin funcionalidad
+                    onPressed: () async {
+                      await MatchService().markMatchAsStarted(
+                        widget.groupId,
+                        widget.matchId,
+                      );
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('¡Partido comenzado!')),
+                        );
+                      }
                     },
                   ),
                 ],

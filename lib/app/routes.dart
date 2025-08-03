@@ -22,6 +22,21 @@ class AppRoutes {
     register: (context) => const RegisterScreen(),
     home: (context) => const HomeScreen(),
     players: (context) => const PlayerScreen(),
-    newMatch5: (context) => const NewMatchScreen(),
+    
   };
+
+  static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
+  if (settings.name == newMatch5) {
+    final args = settings.arguments as Map<String, dynamic>;
+    return MaterialPageRoute(
+      builder: (_) => NewMatchScreen(
+        groupId: args['groupId'],
+        matchId: args['matchId'],
+      ),
+    );
+  }
+
+  return null; // Ruta desconocida
+}
+
 }
