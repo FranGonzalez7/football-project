@@ -13,6 +13,7 @@ dependencies:
   firebase_storage: ^12.4.10
   flutter:
     sdk: flutter
+  flutter_svg: ^2.2.0
   font_awesome_flutter: ^10.8.0
   image_picker: ^1.1.2
   path: ^1.9.1
@@ -29,3 +30,4 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    

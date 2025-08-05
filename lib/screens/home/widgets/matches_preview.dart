@@ -4,6 +4,7 @@ import 'package:football_picker/services/auth_service.dart';
 import 'package:football_picker/services/match_services.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
+/// 👀 Muestra una vista previa de los partidos sin comenzar dentro del grupo del usuario
 class MatchesPreview extends StatelessWidget {
   const MatchesPreview({super.key});
 
@@ -22,18 +23,18 @@ class MatchesPreview extends StatelessWidget {
         return StreamBuilder<List<Match>>(
           stream: MatchService().getOngoingMatches(groupId),
           builder: (context, matchSnapshot) {
-            if (matchSnapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-
-            if (!matchSnapshot.hasData) {
+            if (matchSnapshot.hasError) {
               return const Padding(
                 padding: EdgeInsets.all(16),
                 child: Text('Error al cargar los partidos 😢'),
               );
             }
 
-            final allMatches = matchSnapshot.data!;
+            if (!matchSnapshot.hasData) {
+              return const CircularProgressIndicator();
+            }
+
+            final allMatches = matchSnapshot.data ?? [];
             final unstartedMatches =
                 allMatches.where((match) => match.hasStarted == false).toList();
 
@@ -44,12 +45,14 @@ class MatchesPreview extends StatelessWidget {
               );
             }
 
+            // 📝 Lista de partidos sin empezar
             return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: unstartedMatches.length,
               itemBuilder: (context, index) {
                 final match = unstartedMatches[index];
+
                 return GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(
@@ -64,9 +67,9 @@ class MatchesPreview extends StatelessWidget {
                   child: Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: 16,
-                      vertical: 8,
+                      vertical: 10,
                     ),
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: AppColors.background,
                       borderRadius: BorderRadius.circular(12),
@@ -74,25 +77,12 @@ class MatchesPreview extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.sports_soccer, size: 32),
-                        const SizedBox(width: 16),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Partido pendiente',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Creado el ${match.createdAt.toLocal()}',
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ],
+                          child: Image.asset(
+                            'assets/images/field_white.png',
+                            width: 200,
+                            height: 100,
+                            fit: BoxFit.contain,
                           ),
                         ),
                         const Icon(Icons.arrow_forward_ios),

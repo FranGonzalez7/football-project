@@ -42,10 +42,10 @@ class Match {
   /// 🔁 Crea una instancia de `Match` desde un documento de Firestore.
   factory Match.fromMap(String id, Map<String, dynamic> map) {
     final createdAtRaw = map['createdAt'];
-    final Timestamp timestamp =
-        createdAtRaw is Timestamp
-            ? createdAtRaw
-            : Timestamp.now(); // ⛑️ fallback de seguridad
+    if (createdAtRaw == null) {
+      throw Exception('Match sin createdAt: $id');
+    }
+    final timestamp = createdAtRaw as Timestamp;
 
     return Match(
       id: id,

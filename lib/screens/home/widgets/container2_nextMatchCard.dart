@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:football_picker/screens/new_match/widgets/matches_preview.dart';
+import 'package:football_picker/screens/home/widgets/matches_preview.dart';
 import 'package:football_picker/services/auth_service.dart';
 import 'package:football_picker/services/match_services.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
+/// 📅 Widget que muestra el próximo partido y opciones para crear uno nuevo
 class NextMatchCard extends StatelessWidget {
   const NextMatchCard({super.key});
 
@@ -12,6 +13,7 @@ class NextMatchCard extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
+        // 📦 Contenedor principal
         Container(
           decoration: BoxDecoration(
             color: AppColors.background,
@@ -22,19 +24,21 @@ class NextMatchCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(flex: 3, child: MatchesPreview()),
+              // 👀 Vista previa del partido
+              Flexible(flex: 3, child: const MatchesPreview()),
               const SizedBox(width: 16),
               const VerticalDivider(
                 width: 20,
                 thickness: 0.5,
                 color: Colors.grey,
               ),
+              // ⚽ Botones para crear partidos según formato
               Flexible(
                 flex: 2,
                 child: Center(
                   child: Column(
                     children: [
-                      Spacer(),
+                      const Spacer(),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.sports_soccer),
                         label: const Text('5 vs 5'),
@@ -76,14 +80,13 @@ class NextMatchCard extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      Spacer(),
-
+                      const Spacer(),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.sports_soccer),
                         label: const Text('6 vs 6'),
-                        onPressed: () {},
-
+                        onPressed: () {
+                          // 📝 Implementar lógica de partido 6 vs 6
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey,
                           foregroundColor: Colors.black,
@@ -93,14 +96,13 @@ class NextMatchCard extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      Spacer(),
-
+                      const Spacer(),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.sports_soccer),
                         label: const Text('7 vs 7'),
-                        onPressed: () {},
-
+                        onPressed: () {
+                          // 📝 Implementar lógica de partido 7 vs 7
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey,
                           foregroundColor: Colors.black,
@@ -110,8 +112,7 @@ class NextMatchCard extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      Spacer(),
+                      const Spacer(),
                     ],
                   ),
                 ),
@@ -119,6 +120,7 @@ class NextMatchCard extends StatelessWidget {
             ],
           ),
         ),
+        // 🏷️ Etiqueta superior "Siguiente Partido"
         Positioned(
           top: -12,
           left: 16,

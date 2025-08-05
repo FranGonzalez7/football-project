@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
+/// 🧾 Widget que muestra información básica del grupo del usuario actual
 class GroupInfoCard extends StatelessWidget {
   final String groupName;
   final String groupCode;
@@ -16,6 +17,7 @@ class GroupInfoCard extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
+        // 🧱 Tarjeta principal con borde y fondo
         Container(
           decoration: BoxDecoration(
             color: AppColors.background,
@@ -27,9 +29,7 @@ class GroupInfoCard extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  children: [
-                    Text(
+                Text(
                   'Welcome to $groupName',
                   style: const TextStyle(
                     fontSize: 20,
@@ -45,13 +45,11 @@ class GroupInfoCard extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                  ],
-                ),
-                
               ],
             ),
           ),
         ),
+        // 🏷️ Etiqueta flotante superior
         Positioned(
           top: -12,
           left: 16,

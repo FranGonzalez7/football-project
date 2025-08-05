@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
+/// 📊 Widget de estadísticas de jugadores (en construcción)
 class PlayerStatsCard extends StatelessWidget {
   const PlayerStatsCard({super.key});
 
@@ -9,6 +10,7 @@ class PlayerStatsCard extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
+        // 🧱 Contenedor principal
         Container(
           decoration: BoxDecoration(
             color: AppColors.background,
@@ -16,8 +18,14 @@ class PlayerStatsCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: Center(child: Text('Tercer Bloque')),
+          child: const Center(
+            child: Text(
+              'Tercer Bloque',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ),
+        // 🏷️ Etiqueta superior "Player Stats"
         Positioned(
           top: -12,
           left: 16,

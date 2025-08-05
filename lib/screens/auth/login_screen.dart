@@ -77,13 +77,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     const Text(
-                      'Welcome to the Game',
+                      'Welcome',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 38,
+                        fontSize: 42,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    const SizedBox(height: 10,),
                     const Text('⚽', style: TextStyle(fontSize: 58)),
                     const SizedBox(height: 102),
 

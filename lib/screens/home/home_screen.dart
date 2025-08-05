@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? groupName;
   String? groupCode;
   bool isLoading = true;
-  int _selectedIndex = 2; // Home por defecto
+  int _selectedIndex = 2; // 🏠 Home por defecto
 
   final AuthService _authService = AuthService();
 
@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadGroupName();
   }
 
+  // 📱 Manejo de navegación inferior
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -39,63 +40,57 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.pushNamed(context, '/players');
         break;
       case 1:
-        //Navigator.pushNamed(context, '/matches');
+        // 📝 Implementar navegación a matches
         break;
       case 2:
-        // Ya estás en Home, quizás no haces nada
+        // 🧭 Ya estamos en Home
         break;
       case 3:
-        //Navigator.pushNamed(context, '/ranking');
+        // 📝 Implementar navegación a ranking
         break;
       case 4:
-        //Navigator.pushNamed(context, '/settings');
+        // 📝 Implementar navegación a ajustes
         break;
     }
   }
 
+  // 🔐 Cerrar sesión
   void _logout() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Cerrar sesión'),
-            content: const Text('¿Seguro que quieres cerrar sesión?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Salir'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Cerrar sesión'),
+        content: const Text('¿Seguro que quieres cerrar sesión?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
           ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Salir'),
+          ),
+        ],
+      ),
     );
 
     if (confirm == true) {
-      await _authService.logout(); // ✅ uso del servicio
+      await _authService.logout();
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(
-        '/login',
-      ); // ⚠️ Asegúrate de tener esta ruta definida
+      Navigator.of(context).pushReplacementNamed('/login');
     }
   }
 
+  // 🔄 Cargar información del grupo del usuario actual
   Future<void> _loadGroupName() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
-    final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     final groupId = userDoc.data()?['groupId'];
 
     if (groupId != null) {
-      final groupDoc =
-          await FirebaseFirestore.instance
-              .collection('groups')
-              .doc(groupId)
-              .get();
+      final groupDoc = await FirebaseFirestore.instance.collection('groups').doc(groupId).get();
       final name = groupDoc.data()?['name'];
       final code = groupDoc.data()?['code'];
       setState(() {
@@ -116,9 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Screen'),
+        title: const Text('Home'),
         actions: [
-          AppBarMenuButton(),
+          const AppBarMenuButton(),
           IconButton(
             tooltip: 'Cerrar sesión',
             icon: const Icon(Icons.logout),
@@ -128,15 +123,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Stack(
         children: [
-          // Fondo
+          // 🌿 Fondo de césped
           Positioned.fill(
             child: Image.asset('assets/images/cesped.jpg', fit: BoxFit.cover),
           ),
-          // Capa oscura encima
+          // 🌑 Capa oscura para legibilidad
           Positioned.fill(
             child: Container(color: Colors.black.withOpacity(0.1)),
           ),
-          // Contenido dividido proporcionalmente
+          // 📦 Contenido principal
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(30.0),
@@ -150,16 +145,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  Expanded(flex: 2, child: const NextMatchCard()),
+                  // 📅 Próximo partido
+                  const Expanded(flex: 2, child: NextMatchCard()),
                   const SizedBox(height: 18),
-                  Expanded(flex: 2, child: const PlayerStatsCard()),
+                  // 📊 Estadísticas jugadores
+                  const Expanded(flex: 2, child: PlayerStatsCard()),
                 ],
               ),
             ),
           ),
         ],
       ),
-
       bottomNavigationBar: AppBottomNavigationBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,

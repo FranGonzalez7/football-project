@@ -56,7 +56,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                     children: [
                       Positioned.fill(
                         child: Image.asset(
-                          'assets/images/field.png',
+                          'assets/images/field_white_vertical.png',
+                          height: 200,
+                          width: 100,
                           fit: BoxFit.cover,
                         ),
                       ),

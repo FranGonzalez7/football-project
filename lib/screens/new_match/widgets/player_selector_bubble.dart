@@ -36,7 +36,7 @@ class PlayerSelectorBubble extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 6),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: color,
+              color: Colors.transparent,
               border: Border.all(
                 color: Colors.white,
                 width: isSelected ? 3 : 2,
