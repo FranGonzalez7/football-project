@@ -21,6 +21,7 @@ class PlayerSelectorBubble extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       onDoubleTap: () {
+        onTap.call();
         showDialog(
           context: context,
           builder: (_) => PlayerCard(player: player),
