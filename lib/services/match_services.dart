@@ -16,27 +16,30 @@ class MatchService {
   ///
   /// Retorna el ID del nuevo partido.
   Future<String> createMatch({
-    required String createdBy,
-    required String groupId,
-  }) async {
-    final matchData = {
-      'createdBy': createdBy,
-      'createdAt': FieldValue.serverTimestamp(),
-      'playersTeamA': [],
-      'playersTeamB': [],
-      'isFinished': false,
-      'hasStarted': false,
-      'groupId': groupId,
-    };
+  required String createdBy,
+  required String groupId,
+  required DateTime scheduledDate,
+}) async {
+  final matchData = {
+    'createdBy': createdBy,
+    'createdAt': FieldValue.serverTimestamp(),
+    'scheduledDate': Timestamp.fromDate(scheduledDate),
+    'playersTeamA': [],
+    'playersTeamB': [],
+    'isFinished': false,
+    'hasStarted': false,
+    'groupId': groupId,
+  };
 
-    final docRef = await _firestore
-        .collection('groups')
-        .doc(groupId)
-        .collection('matches')
-        .add(matchData);
+  final docRef = await _firestore
+      .collection('groups')
+      .doc(groupId)
+      .collection('matches')
+      .add(matchData);
 
-    return docRef.id;
-  }
+  return docRef.id;
+}
+
 
   /// 🔄 Devuelve un stream en tiempo real de los partidos del grupo.
   ///
@@ -218,4 +221,21 @@ Stream<List<Match>> getOngoingMatches(String groupId) {
         .doc(matchId)
         .update({'hasStarted': true});
   }
+
+  // 📆 Actualiza fecha del partido:
+  Future<void> updateScheduledDate({
+  required String groupId,
+  required String matchId,
+  required DateTime scheduledDate,
+}) async {
+  await _firestore
+      .collection('groups')
+      .doc(groupId)
+      .collection('matches')
+      .doc(matchId)
+      .update({
+        'scheduledDate': Timestamp.fromDate(scheduledDate),
+      });
+}
+
 }

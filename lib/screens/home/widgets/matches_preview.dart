@@ -3,6 +3,7 @@ import 'package:football_picker/models/match_model.dart';
 import 'package:football_picker/services/auth_service.dart';
 import 'package:football_picker/services/match_services.dart';
 import 'package:football_picker/theme/app_colors.dart';
+import 'package:intl/intl.dart';
 
 /// 👀 Muestra una vista previa de los partidos sin comenzar dentro del grupo del usuario
 class MatchesPreview extends StatelessWidget {
@@ -65,11 +66,12 @@ class MatchesPreview extends StatelessWidget {
                     );
                   },
                   child: Container(
+                    
                     margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
+                      horizontal: 0,
                       vertical: 10,
                     ),
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: AppColors.background,
                       borderRadius: BorderRadius.circular(12),
@@ -78,11 +80,26 @@ class MatchesPreview extends StatelessWidget {
                     child: Row(
                       children: [
                         Expanded(
-                          child: Image.asset(
-                            'assets/images/field_white.png',
-                            width: 200,
-                            height: 100,
-                            fit: BoxFit.contain,
+                          child: Column(
+                            children: [
+                              Text(
+                                '📅 ${DateFormat('dd/MM/yyyy – HH:mm').format(match.scheduledDate)}',                              
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 4,),
+                              
+                              Image.asset(
+                                'assets/images/field_white.png',
+                                width: 200,
+                                height: 100,
+                                fit: BoxFit.contain,
+                              ),
+                              
+                            ],
                           ),
                         ),
                         const Icon(Icons.arrow_forward_ios),

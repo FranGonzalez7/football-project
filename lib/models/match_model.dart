@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// 📝 Modelo que representa un partido de fútbol.
 ///
-/// Cada partido tiene un creador, una fecha, dos equipos de jugadores,
+/// Cada partido tiene un creador, una fecha de creación,
+/// una fecha programada para jugarse, dos equipos de jugadores,
 /// una marca si ha finalizado o no, y un grupo al que pertenece.
 class Match {
   /// 🆔 ID único del partido (usado como ID del documento en Firestore).
@@ -14,6 +15,9 @@ class Match {
 
   /// 🕒 Fecha y hora de creación del partido.
   final DateTime createdAt;
+
+  /// 📅 Fecha y hora programadas para disputar el partido.
+  final DateTime scheduledDate;
 
   /// 🔴 Lista de IDs de jugadores del equipo A (por ejemplo, rojo).
   final List<String> playersTeamA;
@@ -32,6 +36,7 @@ class Match {
     required this.id,
     required this.createdBy,
     required this.createdAt,
+    required this.scheduledDate,
     required this.playersTeamA,
     required this.playersTeamB,
     required this.isFinished,
@@ -42,23 +47,27 @@ class Match {
   /// 🔁 Crea una instancia de `Match` desde un documento de Firestore.
   factory Match.fromMap(String id, Map<String, dynamic> map) {
     final createdAtRaw = map['createdAt'];
+    final scheduledDateRaw = map['scheduledDate'];
+
     if (createdAtRaw == null) {
-      throw Exception('Match sin createdAt: $id');
+      throw Exception('❌ Match sin createdAt: $id');
     }
-    final timestamp = createdAtRaw as Timestamp;
+
+    if (scheduledDateRaw == null) {
+      throw Exception('❌ Match sin scheduledDate: $id');
+    }
 
     return Match(
       id: id,
       createdBy: map['createdBy'] ?? '',
-      createdAt: timestamp.toDate(),
-      playersTeamA:
-          map['playersTeamA'] != null
-              ? List<String>.from(map['playersTeamA'])
-              : <String>[],
-      playersTeamB:
-          map['playersTeamB'] != null
-              ? List<String>.from(map['playersTeamB'])
-              : <String>[],
+      createdAt: (createdAtRaw as Timestamp).toDate(),
+      scheduledDate: (scheduledDateRaw as Timestamp).toDate(),
+      playersTeamA: map['playersTeamA'] != null
+          ? List<String>.from(map['playersTeamA'])
+          : <String>[],
+      playersTeamB: map['playersTeamB'] != null
+          ? List<String>.from(map['playersTeamB'])
+          : <String>[],
       isFinished: map['isFinished'] ?? false,
       hasStarted: map['hasStarted'] ?? false,
       groupId: map['groupId'] ?? '',
@@ -70,6 +79,7 @@ class Match {
     return {
       'createdBy': createdBy,
       'createdAt': createdAt,
+      'scheduledDate': scheduledDate,
       'playersTeamA': playersTeamA,
       'playersTeamB': playersTeamB,
       'isFinished': isFinished,

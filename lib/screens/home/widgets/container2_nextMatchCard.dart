@@ -57,6 +57,8 @@ class NextMatchCard extends StatelessWidget {
                             matchId = await MatchService().createMatch(
                               createdBy: appUser.uid,
                               groupId: appUser.groupId,
+                              scheduledDate: DateTime.now()
+                              
                             );
                           }
 

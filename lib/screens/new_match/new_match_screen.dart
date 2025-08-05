@@ -7,6 +7,7 @@ import 'package:football_picker/services/match_services.dart';
 import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/theme/app_colors.dart';
 import 'package:football_picker/widgets/custom_primary_button.dart';
+import 'package:intl/intl.dart';
 
 class NewMatchScreen extends StatefulWidget {
   final String groupId;
@@ -26,10 +27,25 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
   late Future<List<Player>> _playersFuture;
   final PlayerService _playerService = PlayerService();
 
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+
   @override
   void initState() {
     super.initState();
+
     _playersFuture = _playerService.getPlayers();
+
+    // 🔁 Cargamos el partido para leer su fecha programada
+    MatchService()
+        .getMatchById(groupId: widget.groupId, matchId: widget.matchId)
+        .then((match) {
+          if (match != null && mounted) {
+            setState(() {
+              _selectedDate = match.scheduledDate;
+            });
+          }
+        });
   }
 
   @override
@@ -41,12 +57,69 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
       appBar: AppBar(
         title: const Text('5 vs 5'),
         backgroundColor: AppColors.background,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () async {
+              final DateTime now = DateTime.now();
+
+              // Primero selecciona la fecha
+              final DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: _selectedDate ?? now,
+                firstDate: DateTime(2020),
+                lastDate: DateTime(2100),
+              );
+
+              if (pickedDate != null) {
+                // Luego selecciona la hora
+                final TimeOfDay? pickedTime = await showTimePicker(
+                  context: context,
+                  initialTime: _selectedTime ?? TimeOfDay.fromDateTime(now),
+                );
+
+                if (pickedTime != null) {
+                  final scheduledDateTime = DateTime(
+                    pickedDate.year,
+                    pickedDate.month,
+                    pickedDate.day,
+                    pickedTime.hour,
+                    pickedTime.minute,
+                  );
+
+                  setState(() {
+                    _selectedDate = scheduledDateTime;
+                    _selectedTime = pickedTime;
+                  });
+
+                  await MatchService().updateScheduledDate(
+                    groupId: widget.groupId,
+                    matchId: widget.matchId,
+                    scheduledDate: scheduledDateTime,
+                  );
+                }
+              }
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         top: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Text(
+              _selectedDate != null
+                  ? '📅 ${DateFormat('dd/MM/yyyy – HH:mm').format(_selectedDate!)}'
+                  : '📅 Fecha no seleccionada',
+
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -57,13 +130,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                       Positioned.fill(
                         child: Image.asset(
                           'assets/images/field_white_vertical.png',
-                          height: 200,
-                          width: 100,
                           fit: BoxFit.cover,
                         ),
                       ),
-
-                      // Burbujas estáticas de ejemplo
                       Positioned(
                         left: 196,
                         top: 16,
@@ -120,7 +189,6 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
               ),
             ),
 
-            // Panel inferior con selector y botón
             Container(
               height: 220,
               padding: const EdgeInsets.all(16),
@@ -147,8 +215,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                         return PlayerSelectorList(
                           players: players,
                           playerColors: {
-                            for (var p in players)
-                              p.id: lowerTeam, // o lógica futura
+                            for (var p in players) p.id: lowerTeam,
                           },
                         );
                       }
