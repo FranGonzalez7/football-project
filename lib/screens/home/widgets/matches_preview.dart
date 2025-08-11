@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/match_model.dart';
 import 'package:football_picker/services/auth_service.dart'; // ojo al nombre
-import 'package:football_picker/services/match_services.dart';
+import 'package:football_picker/services/match_service.dart';
 import 'package:football_picker/theme/app_colors.dart';
 import 'package:intl/intl.dart';
 

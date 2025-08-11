@@ -236,30 +236,125 @@ class MatchService {
         .update({'scheduledDate': Timestamp.fromDate(scheduledDate)});
   }
 
-// Todos los partidos no finalizados, ordenados por fecha (asc).
-// Filtramos en cliente los que ya pasaron hace >5 min si quieres.
-Stream<List<Match>> getUpcomingMatches(String groupId, {bool onlyUnstarted = true}) {
-  final q = _firestore
-      .collection('groups').doc(groupId).collection('matches')
-      .where('isFinished', isEqualTo: false)
-      .orderBy('scheduledDate'); // asc
+  // Todos los partidos no finalizados, ordenados por fecha (asc).
+  // Filtramos en cliente los que ya pasaron hace >5 min si quieres.
+  Stream<List<Match>> getUpcomingMatches(
+    String groupId, {
+    bool onlyUnstarted = true,
+  }) {
+    final q = _firestore
+        .collection('groups')
+        .doc(groupId)
+        .collection('matches')
+        .where('isFinished', isEqualTo: false)
+        .orderBy('scheduledDate'); // asc
 
-  return q.snapshots().map((snap) {
-    final list = snap.docs.map((d) => Match.fromMap(d.id, d.data())).toList();
+    return q.snapshots().map((snap) {
+      final list = snap.docs.map((d) => Match.fromMap(d.id, d.data())).toList();
 
-    // Tolerancia de 5 minutos para evitar el problema de "justo en el pasado"
-    final cutoff = DateTime.now().subtract(const Duration(minutes: 5));
+      // Tolerancia de 5 minutos para evitar el problema de "justo en el pasado"
+      final cutoff = DateTime.now().subtract(const Duration(minutes: 5));
 
-    final filtered = list.where((m) {
-      // Evita nulos por si acaso
-      if (m.scheduledDate == null) return false;
-      final notTooOld = m.scheduledDate.isAfter(cutoff);
-      final notStartedOrDontCare = !onlyUnstarted || (m.hasStarted == false);
-      return notTooOld && notStartedOrDontCare;
-    }).toList();
+      final filtered =
+          list.where((m) {
+            // Evita nulos por si acaso
+            if (m.scheduledDate == null) return false;
+            final notTooOld = m.scheduledDate.isAfter(cutoff);
+            final notStartedOrDontCare =
+                !onlyUnstarted || (m.hasStarted == false);
+            return notTooOld && notStartedOrDontCare;
+          }).toList();
 
-    return filtered;
-  });
-}
+      return filtered;
+    });
+  }
 
+  Future<void> updateSlotAssignments({
+    required String groupId,
+    required String matchId,
+    required Map<String, String?> assignments,
+  }) async {
+    // Guardar solo los slots con jugador
+    final sanitized = <String, String>{};
+    assignments.forEach((k, v) {
+      if (v != null && v.isNotEmpty) sanitized[k] = v;
+    });
+
+    // Derivar arrays de equipo a partir de los slots
+    // (ajusta el orden a tu gusto: aquí uso el orden visual)
+    final teamA =
+        [
+          'U1',
+          'U2',
+          'U3',
+          'U4',
+          'U5',
+        ].map((k) => assignments[k]).whereType<String>().toList();
+
+    final teamB =
+        [
+          'D6',
+          'D7',
+          'D8',
+          'D9',
+          'D10',
+        ].map((k) => assignments[k]).whereType<String>().toList();
+
+    final ref = _firestore
+        .collection('groups')
+        .doc(groupId)
+        .collection('matches')
+        .doc(matchId);
+
+    // Una sola actualización atómica
+    await ref.update({
+      'slotAssignments': sanitized,
+      'playersTeamA': teamA,
+      'playersTeamB': teamB,
+    });
+  }
+
+  // Lee las asignaciones de slots (si no hay, devuelve mapa vacío).
+  Future<Map<String, String>> getSlotAssignments({
+    required String groupId,
+    required String matchId,
+  }) async {
+    final doc =
+        await _firestore
+            .collection('groups')
+            .doc(groupId)
+            .collection('matches')
+            .doc(matchId)
+            .get();
+
+    final data = doc.data();
+    if (data == null) return {};
+
+    final raw = data['slotAssignments'] as Map<String, dynamic>?;
+    if (raw == null) return {};
+
+    // cast seguro a Map<String, String>
+    return raw.map((k, v) => MapEntry(k, v as String));
+  }
+
+  // Stream en tiempo real de las asignaciones de slots
+  Stream<Map<String, String>> watchSlotAssignments({
+    required String groupId,
+    required String matchId,
+  }) {
+    return _firestore
+        .collection('groups')
+        .doc(groupId)
+        .collection('matches')
+        .doc(matchId)
+        .snapshots()
+        .map((doc) {
+          if (!doc.exists) return <String, String>{};
+          final data = doc.data();
+          if (data == null) return <String, String>{};
+          final raw = data['slotAssignments'] as Map<String, dynamic>?;
+          if (raw == null) return <String, String>{};
+          return raw.map((k, v) => MapEntry(k, v as String));
+        });
+  }
 }

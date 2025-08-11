@@ -4,12 +4,16 @@ import 'package:football_picker/screens/new_match/widgets/player_selector_bubble
 
 class PlayerSelectorList extends StatefulWidget {
   final List<Player> players;
-  final Map<String, Color> playerColors; // map id jugador a color equipo
+  final Map<String, Color> playerColors;
+  final ValueChanged<Player> onPlayerTap;     // 👈 NUEVO: notifica al padre
+  final String? selectedPlayerId;             // 👈 NUEVO: selección controlada opcional
 
   const PlayerSelectorList({
     super.key,
     required this.players,
     required this.playerColors,
+    required this.onPlayerTap,
+    this.selectedPlayerId,
   });
 
   @override
@@ -17,10 +21,12 @@ class PlayerSelectorList extends StatefulWidget {
 }
 
 class _PlayerSelectorListState extends State<PlayerSelectorList> {
-  String? selectedPlayerId;
+  String? selectedPlayerLocalId; // usado sólo si el padre no controla
 
   @override
   Widget build(BuildContext context) {
+    final controlledSelection = widget.selectedPlayerId; // puede ser null
+
     return SizedBox(
       height: 80,
       child: ListView.builder(
@@ -29,16 +35,23 @@ class _PlayerSelectorListState extends State<PlayerSelectorList> {
         itemBuilder: (context, index) {
           final player = widget.players[index];
           final color = widget.playerColors[player.id] ?? Colors.grey;
-          final isSelected = selectedPlayerId == player.id;
+
+          // Si el padre pasa selectedPlayerId, usamos esa; si no, usamos la local
+          final isSelected = (controlledSelection ?? selectedPlayerLocalId) == player.id;
 
           return PlayerSelectorBubble(
             player: player,
             color: color,
             isSelected: isSelected,
             onTap: () {
-              setState(() {
-                selectedPlayerId = player.id;
-              });
+              // actualizar local SOLO si no está controlado desde fuera
+              if (controlledSelection == null) {
+                setState(() {
+                  selectedPlayerLocalId =
+                      (selectedPlayerLocalId == player.id) ? null : player.id;
+                });
+              }
+              widget.onPlayerTap(player); // notificar al padre
             },
           );
         },

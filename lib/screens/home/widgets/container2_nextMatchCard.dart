@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/screens/home/widgets/matches_preview.dart';
 import 'package:football_picker/services/auth_service.dart';
-import 'package:football_picker/services/match_services.dart';
+import 'package:football_picker/services/match_service.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
 /// 📅 Widget que muestra el próximo partido y opciones para crear uno nuevo
