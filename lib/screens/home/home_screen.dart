@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 18),
                   // 📅 Próximo partido
-                  const Expanded(flex: 2, child: NextMatchCard()),
+                  const Expanded(flex: 3, child: NextMatchCard()),
                   const SizedBox(height: 18),
                   // 📊 Estadísticas jugadores
                   const Expanded(flex: 2, child: PlayerStatsCard()),

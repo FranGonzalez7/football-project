@@ -46,21 +46,12 @@ class NextMatchCard extends StatelessWidget {
                           final appUser = await AuthService().getCurrentUser();
                           if (appUser == null) return;
 
-                          final existingMatch = await MatchService()
-                              .getUnstartedMatch(appUser.groupId);
-
-                          String matchId;
-
-                          if (existingMatch != null) {
-                            matchId = existingMatch.id;
-                          } else {
-                            matchId = await MatchService().createMatch(
-                              createdBy: appUser.uid,
-                              groupId: appUser.groupId,
-                              scheduledDate: DateTime.now()
-                              
-                            );
-                          }
+                          // Usa la fecha seleccionada por el usuario si ya tienes selector; de momento, ahora:
+                          final matchId = await MatchService().createMatch(
+                            createdBy: appUser.uid,
+                            groupId: appUser.groupId,
+                            scheduledDate: DateTime.now(),
+                          );
 
                           if (context.mounted) {
                             Navigator.pushNamed(
@@ -73,6 +64,7 @@ class NextMatchCard extends StatelessWidget {
                             );
                           }
                         },
+
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryButton,
                           foregroundColor: Colors.black,

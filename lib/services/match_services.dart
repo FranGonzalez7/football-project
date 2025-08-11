@@ -16,30 +16,29 @@ class MatchService {
   ///
   /// Retorna el ID del nuevo partido.
   Future<String> createMatch({
-  required String createdBy,
-  required String groupId,
-  required DateTime scheduledDate,
-}) async {
-  final matchData = {
-    'createdBy': createdBy,
-    'createdAt': FieldValue.serverTimestamp(),
-    'scheduledDate': Timestamp.fromDate(scheduledDate),
-    'playersTeamA': [],
-    'playersTeamB': [],
-    'isFinished': false,
-    'hasStarted': false,
-    'groupId': groupId,
-  };
+    required String createdBy,
+    required String groupId,
+    required DateTime scheduledDate,
+  }) async {
+    final matchData = {
+      'createdBy': createdBy,
+      'createdAt': FieldValue.serverTimestamp(),
+      'scheduledDate': Timestamp.fromDate(scheduledDate),
+      'playersTeamA': [],
+      'playersTeamB': [],
+      'isFinished': false,
+      'hasStarted': false,
+      'groupId': groupId,
+    };
 
-  final docRef = await _firestore
-      .collection('groups')
-      .doc(groupId)
-      .collection('matches')
-      .add(matchData);
+    final docRef = await _firestore
+        .collection('groups')
+        .doc(groupId)
+        .collection('matches')
+        .add(matchData);
 
-  return docRef.id;
-}
-
+    return docRef.id;
+  }
 
   /// 🔄 Devuelve un stream en tiempo real de los partidos del grupo.
   ///
@@ -150,35 +149,36 @@ class MatchService {
   }
 
   /// 🔍 Devuelve solo los partidos no finalizados (en curso) de un grupo.
-///
-/// Útil para mostrar la lista de partidos activos en la `home_screen`.
-Stream<List<Match>> getOngoingMatches(String groupId) {
-  return _firestore
-      .collection('groups')
-      .doc(groupId)
-      .collection('matches')
-      .where('isFinished', isEqualTo: false)
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map((snapshot) {
-        return snapshot.docs.map((doc) {
-          try {
-            final data = doc.data();
-            // 🔒 Evita errores por createdAt nulo
-            if (data['createdAt'] == null) {
-              print('⚠️ Match con createdAt nulo: ${doc.id}');
-              return null;
-            }
-            return Match.fromMap(doc.id, data);
-          } catch (e) {
-            print('❌ Error al convertir match: ${doc.id} → $e');
-            return null;
-          }
-        }).whereType<Match>().toList(); // 🔍 filtra los nulos
-      });
-}
-
-
+  ///
+  /// Útil para mostrar la lista de partidos activos en la `home_screen`.
+  Stream<List<Match>> getOngoingMatches(String groupId) {
+    return _firestore
+        .collection('groups')
+        .doc(groupId)
+        .collection('matches')
+        .where('isFinished', isEqualTo: false)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((doc) {
+                try {
+                  final data = doc.data();
+                  // 🔒 Evita errores por createdAt nulo
+                  if (data['createdAt'] == null) {
+                    print('⚠️ Match con createdAt nulo: ${doc.id}');
+                    return null;
+                  }
+                  return Match.fromMap(doc.id, data);
+                } catch (e) {
+                  print('❌ Error al convertir match: ${doc.id} → $e');
+                  return null;
+                }
+              })
+              .whereType<Match>()
+              .toList(); // 🔍 filtra los nulos
+        });
+  }
 
   /// 🗑️ Elimina un partido completo (por ejemplo, si se cancela).
   Future<void> deleteMatch({
@@ -224,18 +224,42 @@ Stream<List<Match>> getOngoingMatches(String groupId) {
 
   // 📆 Actualiza fecha del partido:
   Future<void> updateScheduledDate({
-  required String groupId,
-  required String matchId,
-  required DateTime scheduledDate,
-}) async {
-  await _firestore
-      .collection('groups')
-      .doc(groupId)
-      .collection('matches')
-      .doc(matchId)
-      .update({
-        'scheduledDate': Timestamp.fromDate(scheduledDate),
-      });
+    required String groupId,
+    required String matchId,
+    required DateTime scheduledDate,
+  }) async {
+    await _firestore
+        .collection('groups')
+        .doc(groupId)
+        .collection('matches')
+        .doc(matchId)
+        .update({'scheduledDate': Timestamp.fromDate(scheduledDate)});
+  }
+
+// Todos los partidos no finalizados, ordenados por fecha (asc).
+// Filtramos en cliente los que ya pasaron hace >5 min si quieres.
+Stream<List<Match>> getUpcomingMatches(String groupId, {bool onlyUnstarted = true}) {
+  final q = _firestore
+      .collection('groups').doc(groupId).collection('matches')
+      .where('isFinished', isEqualTo: false)
+      .orderBy('scheduledDate'); // asc
+
+  return q.snapshots().map((snap) {
+    final list = snap.docs.map((d) => Match.fromMap(d.id, d.data())).toList();
+
+    // Tolerancia de 5 minutos para evitar el problema de "justo en el pasado"
+    final cutoff = DateTime.now().subtract(const Duration(minutes: 5));
+
+    final filtered = list.where((m) {
+      // Evita nulos por si acaso
+      if (m.scheduledDate == null) return false;
+      final notTooOld = m.scheduledDate.isAfter(cutoff);
+      final notStartedOrDontCare = !onlyUnstarted || (m.hasStarted == false);
+      return notTooOld && notStartedOrDontCare;
+    }).toList();
+
+    return filtered;
+  });
 }
 
 }
