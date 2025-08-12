@@ -16,8 +16,9 @@ class Match {
   /// 🕒 Fecha y hora de creación del partido.
   final DateTime createdAt;
 
-  /// 📅 Fecha y hora programadas para disputar el partido.
+  /// 📅 Fecha, hora y lugar programadas para disputar el partido.
   final DateTime scheduledDate;
+  final String location;
 
   /// 🔴 Lista de IDs de jugadores del equipo A (por ejemplo, rojo).
   final List<String> playersTeamA;
@@ -37,6 +38,7 @@ class Match {
     required this.createdBy,
     required this.createdAt,
     required this.scheduledDate,
+    required this.location,
     required this.playersTeamA,
     required this.playersTeamB,
     required this.isFinished,
@@ -62,6 +64,7 @@ class Match {
       createdBy: map['createdBy'] ?? '',
       createdAt: (createdAtRaw as Timestamp).toDate(),
       scheduledDate: (scheduledDateRaw as Timestamp).toDate(),
+      location: (map['location'] as String?) ?? '',
       playersTeamA: map['playersTeamA'] != null
           ? List<String>.from(map['playersTeamA'])
           : <String>[],
@@ -80,6 +83,7 @@ class Match {
       'createdBy': createdBy,
       'createdAt': createdAt,
       'scheduledDate': scheduledDate,
+      'location': location,
       'playersTeamA': playersTeamA,
       'playersTeamB': playersTeamB,
       'isFinished': isFinished,

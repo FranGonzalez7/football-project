@@ -122,7 +122,7 @@ class NextMatchCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             color: AppColors.background,
             child: const Text(
-              'Siguiente Partido',
+              'Siguientes Partidos',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

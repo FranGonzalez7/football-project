@@ -19,11 +19,13 @@ class MatchService {
     required String createdBy,
     required String groupId,
     required DateTime scheduledDate,
+    String location = '',
   }) async {
     final matchData = {
       'createdBy': createdBy,
       'createdAt': FieldValue.serverTimestamp(),
       'scheduledDate': Timestamp.fromDate(scheduledDate),
+      'location': location,
       'playersTeamA': [],
       'playersTeamB': [],
       'isFinished': false,
@@ -356,5 +358,26 @@ class MatchService {
           if (raw == null) return <String, String>{};
           return raw.map((k, v) => MapEntry(k, v as String));
         });
+  }
+
+  // Helper opcional para el ref (reutilizable)
+  DocumentReference<Map<String, dynamic>> _matchRef(
+    String groupId,
+    String matchId,
+  ) {
+    return _firestore
+        .collection('groups')
+        .doc(groupId)
+        .collection('matches')
+        .doc(matchId);
+  }
+
+  /// 🔧 Actualiza campos sueltos de un partido (update parcial)
+  Future<void> updateMatchFields({
+    required String groupId,
+    required String matchId,
+    required Map<String, dynamic> data,
+  }) async {
+    await _matchRef(groupId, matchId).update(data);
   }
 }

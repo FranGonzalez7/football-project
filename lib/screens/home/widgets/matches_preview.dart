@@ -70,7 +70,9 @@ class MatchesPreview extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Fecha
                               Text(
                                 '📅 ${DateFormat('dd/MM/yyyy – HH:mm').format(match.scheduledDate)}',
                                 style: const TextStyle(
@@ -79,16 +81,46 @@ class MatchesPreview extends StatelessWidget {
                                   color: Colors.white,
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Image.asset(
-                                'assets/images/field_white.png',
-                                width: 200,
-                                height: 100,
-                                fit: BoxFit.contain,
+                              const SizedBox(height: 6),
+
+                              // Lugar (con fallback)
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      (match.location.trim().isNotEmpty)
+                                          ? match.location
+                                          : 'Lugar por confirmar',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
+
+                              const SizedBox(height: 8),
+
+                              // Imagen campo
+                              // Image.asset(
+                              //   'assets/images/field_white.png',
+                              //   width: 200,
+                              //   height: 100,
+                              //   fit: BoxFit.contain,
+                              // ),
                             ],
                           ),
                         ),
+
                         const Icon(Icons.arrow_forward_ios),
                       ],
                     ),

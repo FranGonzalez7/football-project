@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
 import 'package:football_picker/screens/players/widgets/player_card.dart';
+import 'package:football_picker/theme/app_colors.dart';
 
 class PlayerSelectorBubble extends StatelessWidget {
   final Player player;
@@ -39,7 +40,7 @@ class PlayerSelectorBubble extends StatelessWidget {
               shape: BoxShape.circle,
               color: Colors.transparent,
               border: Border.all(
-                color: Colors.white,
+                color: isSelected ? AppColors.primaryButton : Colors.white70,
                 width: isSelected ? 3 : 2,
               ),
               image:
@@ -62,20 +63,20 @@ class PlayerSelectorBubble extends StatelessWidget {
                     )
                     : null,
           ),
-          if (isSelected) ...[
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                player.name,
-                style: const TextStyle(fontSize: 11, color: Colors.white),
-              ),
-            ),
-          ],
+          // if (isSelected) ...[
+          //   const SizedBox(height: 4),
+          //   Container(
+          //     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          //     decoration: BoxDecoration(
+          //       color: Colors.black.withOpacity(0.7),
+          //       borderRadius: BorderRadius.circular(6),
+          //     ),
+          //     child: Text(
+          //       player.name,
+          //       style: const TextStyle(fontSize: 11, color: Colors.white),
+          //     ),
+          //   ),
+          // ],
         ],
       ),
     );
