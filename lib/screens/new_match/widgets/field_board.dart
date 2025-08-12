@@ -2,6 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
 import 'package:football_picker/screens/new_match/slot_bubble.dart';
 
+// Coordenadas normalizadas (x,y) respecto al ancho/alto del campo (0..1)
+const Map<String, Offset> _slotPos = {
+  // UPPER (rojo)
+  'U1': Offset(0.50, 0.08), // Portero
+  'U2': Offset(0.50, 0.24), // Defensa
+  'U3': Offset(0.50, 0.40), // Delantero
+  'U4': Offset(0.20, 0.32), // Lat Izq
+  'U5': Offset(0.80, 0.32), // Lat Der
+
+  // LOWER (azul)
+  'D10': Offset(0.50, 0.92), // Portero
+  'D9' : Offset(0.50, 0.75), // Defensa
+  'D8' : Offset(0.50, 0.59), // Delantero
+  'D7' : Offset(0.20, 0.68), // Lat Izq
+  'D6' : Offset(0.80, 0.68), // Lat Der
+};
+
 class FieldBoard extends StatelessWidget {
   final Map<String, Player> playersById;
   final Map<String, String?> liveAssignments;
@@ -54,160 +71,95 @@ class FieldBoard extends StatelessWidget {
     required this.clearD10,
   });
 
+  Player? _p(String? id) => id != null ? playersById[id] : null;
+
   @override
   Widget build(BuildContext context) {
-    const Color upperTeam = Colors.red;
-    const Color lowerTeam = Colors.blue;
+    const upperTeam = Colors.red;
+    const lowerTeam = Colors.blue;
 
-    Player? _p(String? id) => id != null ? playersById[id] : null;
+    // Helper: crea un slot posicionado por porcentaje reservando altura para etiqueta
+    Widget _slot({
+      required String id,
+      required Color color,
+      required String number,
+      required double bubbleSize,
+      required double w,
+      required double h,
+      required VoidCallback onTap,
+      required VoidCallback onLong,
+    }) {
+      const double labelExtra = 30.0;               // espacio para gap + etiqueta
+      final double containerHeight = bubbleSize + labelExtra;
+
+      final pos = _slotPos[id]!;
+      final cx = pos.dx * w;
+      final cy = pos.dy * h;
+
+      // Centro del círculo en (cx, cy); ajustamos para que quepa etiqueta sin salirse
+      double left = cx - bubbleSize / 2;
+      double top  = cy - bubbleSize / 2;
+
+      // Clamps contra bordes (contando etiqueta por abajo)
+      left = left.clamp(0.0, w - bubbleSize);
+      top  = top.clamp(0.0, h - containerHeight);
+
+      return Positioned(
+        left: left,                     // ✅ usa los valores clampados
+        top: top,
+        child: SizedBox(
+          width: bubbleSize,
+          height: containerHeight,      // ✅ círculo + etiqueta
+          child: SlotBubble(
+            id: id,
+            teamColor: color,
+            number: number,
+            assigned: _p(liveAssignments[id]),
+            highlighted: highlightAll,
+            onTap: onTap,
+            onLongPress: onLong,
+          ),
+        ),
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/field_white_vertical.png',
-                fit: BoxFit.cover,
-              ),
-            ),
+        aspectRatio: 16 / 9, // mantén 16:9 como pediste
+        child: LayoutBuilder(
+          builder: (_, constraints) {
+            final w = constraints.maxWidth;
+            final h = constraints.maxHeight;
 
-            // ------- UPPER (rojo)
-            Positioned(
-              left: 192,
-              top: 16,
-              child: SlotBubble(
-                id: 'U1',
-                teamColor: upperTeam,
-                number: '1',
-                assigned: _p(liveAssignments['U1']),
-                highlighted: highlightAll,
-                onTap: onU1,
-                onLongPress: clearU1,
-              ),
-            ),
-            Positioned(
-              left: 192,
-              top: 116,
-              child: SlotBubble(
-                id: 'U2',
-                teamColor: upperTeam,
-                number: '2',
-                assigned: _p(liveAssignments['U2']),
-                highlighted: highlightAll,
-                onTap: onU2,
-                onLongPress: clearU2,
-              ),
-            ),
-            Positioned(
-              left: 192,
-              top: 246,
-              child: SlotBubble(
-                id: 'U3',
-                teamColor: upperTeam,
-                number: '3',
-                assigned: _p(liveAssignments['U3']),
-                highlighted: highlightAll,
-                onTap: onU3,
-                onLongPress: clearU3,
-              ),
-            ),
-            Positioned(
-              left: 56,
-              top: 181,
-              child: SlotBubble(
-                id: 'U4',
-                teamColor: upperTeam,
-                number: '4',
-                assigned: _p(liveAssignments['U4']),
-                highlighted: highlightAll,
-                onTap: onU4,
-                onLongPress: clearU4,
-              ),
-            ),
-            Positioned(
-              right: 56,
-              top: 181,
-              child: SlotBubble(
-                id: 'U5',
-                teamColor: upperTeam,
-                number: '5',
-                assigned: _p(liveAssignments['U5']),
-                highlighted: highlightAll,
-                onTap: onU5,
-                onLongPress: clearU5,
-              ),
-            ),
+            // Tamaño de burbuja proporcional (ajusta factor si quieres)
+            final bubbleSize = (w * 0.16).clamp(40.0, 72.0);
 
-            // ------- LOWER (azul)
-            Positioned(
-              left: 192,
-              bottom: 16,
-              child: SlotBubble(
-                id: 'D10',
-                teamColor: lowerTeam,
-                number: '10',
-                assigned: _p(liveAssignments['D10']),
-                highlighted: highlightAll,
-                onTap: onD10,
-                onLongPress: clearD10,
-              ),
-            ),
-            Positioned(
-              left: 192,
-              bottom: 116,
-              child: SlotBubble(
-                id: 'D9',
-                teamColor: lowerTeam,
-                number: '9',
-                assigned: _p(liveAssignments['D9']),
-                highlighted: highlightAll,
-                onTap: onD9,
-                onLongPress: clearD9,
-              ),
-            ),
-            Positioned(
-              left: 192,
-              bottom: 246,
-              child: SlotBubble(
-                id: 'D8',
-                teamColor: lowerTeam,
-                number: '8',
-                assigned: _p(liveAssignments['D8']),
-                highlighted: highlightAll,
-                onTap: onD8,
-                onLongPress: clearD8,
-              ),
-            ),
-            Positioned(
-              left: 56,
-              bottom: 181,
-              child: SlotBubble(
-                id: 'D7',
-                teamColor: lowerTeam,
-                number: '7',
-                assigned: _p(liveAssignments['D7']),
-                highlighted: highlightAll,
-                onTap: onD7,
-                onLongPress: clearD7,
-              ),
-            ),
-            Positioned(
-              right: 56,
-              bottom: 181,
-              child: SlotBubble(
-                id: 'D6',
-                teamColor: lowerTeam,
-                number: '6',
-                assigned: _p(liveAssignments['D6']),
-                highlighted: highlightAll,
-                onTap: onD6,
-                onLongPress: clearD6,
-              ),
-            ),
-          ],
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/field_white_vertical.png',
+                    fit: BoxFit.cover, // 16:9 puede recortar: esperado
+                  ),
+                ),
+
+                // ------- UPPER (rojo)
+                _slot(id: 'U1', color: upperTeam, number: '1',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU1, onLong: clearU1),
+                _slot(id: 'U2', color: upperTeam, number: '2',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU2, onLong: clearU2),
+                _slot(id: 'U3', color: upperTeam, number: '3',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU3, onLong: clearU3),
+                _slot(id: 'U4', color: upperTeam, number: '4',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU4, onLong: clearU4),
+                _slot(id: 'U5', color: upperTeam, number: '5',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU5, onLong: clearU5),
+
+                // ------- LOWER (azul)
+                _slot(id: 'D10', color: lowerTeam, number: '10', bubbleSize: bubbleSize, w: w, h: h, onTap: onD10, onLong: clearD10),
+                _slot(id: 'D9',  color: lowerTeam, number: '9',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD9,  onLong: clearD9),
+                _slot(id: 'D8',  color: lowerTeam, number: '8',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD8,  onLong: clearD8),
+                _slot(id: 'D7',  color: lowerTeam, number: '7',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD7,  onLong: clearD7),
+                _slot(id: 'D6',  color: lowerTeam, number: '6',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD6,  onLong: clearD6),
+              ],
+            );
+          },
         ),
       ),
     );

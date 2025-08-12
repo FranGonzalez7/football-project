@@ -10,6 +10,8 @@ class SlotBubble extends StatelessWidget {
   final bool highlighted;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
+  
+  
 
   const SlotBubble({
     required this.id,
