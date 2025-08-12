@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
-import 'package:football_picker/screens/new_match/slot_bubble.dart';
+import 'package:football_picker/screens/new_match/widgets/slot_bubble.dart';
 
 // Coordenadas normalizadas (x,y) respecto al ancho/alto del campo (0..1)
 const Map<String, Offset> _slotPos = {
@@ -124,7 +124,7 @@ class FieldBoard extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 18),
       child: AspectRatio(
         aspectRatio: 16 / 9, // mantén 16:9 como pediste
         child: LayoutBuilder(
@@ -139,7 +139,7 @@ class FieldBoard extends StatelessWidget {
               children: [
                 Positioned.fill(
                   child: Image.asset(
-                    'assets/images/field_white_vertical.png',
+                    'assets/images/green_vertical.png',
                     fit: BoxFit.cover, // 16:9 puede recortar: esperado
                   ),
                 ),

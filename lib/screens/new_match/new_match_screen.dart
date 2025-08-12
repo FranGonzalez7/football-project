@@ -222,6 +222,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                   selectedDate: _selectedDate,
                   location: _matchLocation,
                 ),
+                SizedBox(height: 6,),
 
                 // Board en tiempo real
                 Expanded(
