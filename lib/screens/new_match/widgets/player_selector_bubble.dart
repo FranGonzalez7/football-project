@@ -33,8 +33,8 @@ class PlayerSelectorBubble extends StatelessWidget {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: isSelected ? 80 : 70,
-            height: isSelected ? 80 : 70,
+            width: isSelected ? 70 : 60,
+            height: isSelected ? 70 : 60,
             margin: const EdgeInsets.symmetric(horizontal: 6),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -63,20 +63,29 @@ class PlayerSelectorBubble extends StatelessWidget {
                     )
                     : null,
           ),
-          // if (isSelected) ...[
-          //   const SizedBox(height: 4),
-          //   Container(
-          //     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          //     decoration: BoxDecoration(
-          //       color: Colors.black.withOpacity(0.7),
-          //       borderRadius: BorderRadius.circular(6),
-          //     ),
-          //     child: Text(
-          //       player.name,
-          //       style: const TextStyle(fontSize: 11, color: Colors.white),
-          //     ),
-          //   ),
-          // ],
+          if (isSelected) ...[
+            const SizedBox(height: 4),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: isSelected ? 70 : 60, // igual que la burbuja
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  player.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 11, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

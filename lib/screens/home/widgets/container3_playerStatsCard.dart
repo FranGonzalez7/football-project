@@ -35,7 +35,7 @@ class PlayerStatsCard extends StatelessWidget {
             child: const Text(
               'Player Stats',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),

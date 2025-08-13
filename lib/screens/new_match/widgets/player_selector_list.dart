@@ -28,7 +28,7 @@ class _PlayerSelectorListState extends State<PlayerSelectorList> {
     final controlledSelection = widget.selectedPlayerId; // puede ser null
 
     return SizedBox(
-      height: 90,
+      height: 96,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: widget.players.length,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
+import 'package:football_picker/screens/new_match/widgets/new_match_FABs.dart';
 import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/services/match_service.dart';
 import 'package:football_picker/theme/app_colors.dart';
@@ -40,9 +41,17 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
   Map<String, Player> _playersById = {};
 
   static Map<String, String?> _defaultSlots() => {
-        'U1': null, 'U2': null, 'U3': null, 'U4': null, 'U5': null,
-        'D10': null, 'D9': null, 'D8': null, 'D7': null, 'D6': null,
-      };
+    'U1': null,
+    'U2': null,
+    'U3': null,
+    'U4': null,
+    'U5': null,
+    'D10': null,
+    'D9': null,
+    'D8': null,
+    'D7': null,
+    'D6': null,
+  };
 
   @override
   void initState() {
@@ -53,14 +62,14 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     MatchService()
         .getMatchById(groupId: widget.groupId, matchId: widget.matchId)
         .then((match) {
-      if (match != null && mounted) {
-        setState(() {
-          _selectedDate = match.scheduledDate;
-          _selectedTime = TimeOfDay.fromDateTime(match.scheduledDate);
-          _matchLocation = match.location.toString();
+          if (match != null && mounted) {
+            setState(() {
+              _selectedDate = match.scheduledDate;
+              _selectedTime = TimeOfDay.fromDateTime(match.scheduledDate);
+              _matchLocation = match.location.toString();
+            });
+          }
         });
-      }
-    });
   }
 
   // --- Editar ubicación
@@ -80,9 +89,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     );
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lugar actualizado')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Lugar actualizado')));
     }
   }
 
@@ -104,8 +113,11 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     if (pickedTime == null) return;
 
     final dt = DateTime(
-      pickedDate.year, pickedDate.month, pickedDate.day,
-      pickedTime.hour, pickedTime.minute,
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime.hour,
+      pickedTime.minute,
     );
 
     setState(() {
@@ -154,10 +166,22 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
 
   // --- Empezar partido
   Future<void> _startMatch() async {
-    final teamA = ['U1','U2','U3','U4','U5']
-        .map((s) => _slotAssignments[s]).whereType<String>().toList();
-    final teamB = ['D6','D7','D8','D9','D10']
-        .map((s) => _slotAssignments[s]).whereType<String>().toList();
+    final teamA =
+        [
+          'U1',
+          'U2',
+          'U3',
+          'U4',
+          'U5',
+        ].map((s) => _slotAssignments[s]).whereType<String>().toList();
+    final teamB =
+        [
+          'D6',
+          'D7',
+          'D8',
+          'D9',
+          'D10',
+        ].map((s) => _slotAssignments[s]).whereType<String>().toList();
 
     if (teamA.length != 5 || teamB.length != 5) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -176,9 +200,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     await ms.markMatchAsStarted(widget.groupId, widget.matchId);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('¡Partido comenzado!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('¡Partido comenzado!')));
     }
   }
 
@@ -202,13 +226,16 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
       ),
       body: SafeArea(
         top: false,
+        bottom: false,
         child: FutureBuilder<List<Player>>(
           future: _playersFuture,
           builder: (context, snapPlayers) {
             if (snapPlayers.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (snapPlayers.hasError || !snapPlayers.hasData || snapPlayers.data!.isEmpty) {
+            if (snapPlayers.hasError ||
+                !snapPlayers.hasData ||
+                snapPlayers.data!.isEmpty) {
               return const Center(child: Text('No hay jugadores disponibles'));
             }
 
@@ -222,7 +249,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                   selectedDate: _selectedDate,
                   location: _matchLocation,
                 ),
-                SizedBox(height: 6,),
+                SizedBox(height: 4),
 
                 // Board en tiempo real
                 Expanded(
@@ -242,7 +269,8 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
 
                       final assignedIds = <String>{
                         ..._slotAssignments.values.whereType<String>(),
-                        if (snap.hasData) ...snap.data!.values.whereType<String>(),
+                        if (snap.hasData)
+                          ...snap.data!.values.whereType<String>(),
                       };
 
                       return Column(
@@ -274,6 +302,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                               clearD10: () => _clearSlot('D10'),
                             ),
                           ),
+                          Container(height: 18),
 
                           // Panel inferior
                           PlayerSelectorPanel(
@@ -283,7 +312,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                             onPlayerTap: (player) {
                               setState(() {
                                 _selectedPlayerId =
-                                    (_selectedPlayerId == player.id) ? null : player.id;
+                                    (_selectedPlayerId == player.id)
+                                        ? null
+                                        : player.id;
                               });
                             },
                             onStartMatch: _startMatch,
@@ -298,6 +329,22 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
           },
         ),
       ),
+
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+          bottom:
+              96 +
+              MediaQuery.viewPaddingOf(
+                context,
+              ).bottom, // altura selector + margen
+          
+        ),
+        child: Align(
+          alignment: Alignment.bottomRight,
+          child: NewMatchFABs(onStartMatch: () {}, onFilter: () {}),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

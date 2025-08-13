@@ -69,7 +69,7 @@ class NextMatchCard extends StatelessWidget {
                           backgroundColor: AppColors.primaryButton,
                           foregroundColor: Colors.black,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
+                            horizontal: 14,
                             vertical: 12,
                           ),
                         ),
@@ -85,7 +85,7 @@ class NextMatchCard extends StatelessWidget {
                           backgroundColor: Colors.grey,
                           foregroundColor: Colors.black,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
+                            horizontal: 14,
                             vertical: 12,
                           ),
                         ),
@@ -101,7 +101,7 @@ class NextMatchCard extends StatelessWidget {
                           backgroundColor: Colors.grey,
                           foregroundColor: Colors.black,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
+                            horizontal: 14,
                             vertical: 12,
                           ),
                         ),
@@ -124,7 +124,7 @@ class NextMatchCard extends StatelessWidget {
             child: const Text(
               'Siguientes Partidos',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),

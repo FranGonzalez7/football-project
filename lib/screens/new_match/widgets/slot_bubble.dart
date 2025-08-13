@@ -51,7 +51,7 @@ class SlotBubble extends StatelessWidget {
             ),
           ),
           if (filled && (assigned!.name.trim().isNotEmpty)) ...[
-            const SizedBox(height: 2),
+            //const SizedBox(height: 2),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(

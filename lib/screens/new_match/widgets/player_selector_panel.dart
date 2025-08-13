@@ -26,31 +26,27 @@ class PlayerSelectorPanel extends StatelessWidget {
         playersById.values.where((p) => !assignedIds.contains(p.id)).toList();
 
     return Container(
-      height: 220,
-      padding: const EdgeInsets.all(16),
+      height: 140,
+      padding: const EdgeInsets.only(left: 10, top: 10),
       color: AppColors.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
-            'Seleccionar jugadores',
+            'Jugadores:',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 4),
           PlayerSelectorList(
             players: availablePlayers,
             playerColors: {for (var p in availablePlayers) p.id: Colors.blue},
             selectedPlayerId: selectedPlayerId,
             onPlayerTap: onPlayerTap,
           ),
-          const Spacer(),
-          CustomPrimaryButton(
-            text: 'Comenzar Partido',
-            onPressed: onStartMatch,
-          ),
+          
         ],
       ),
     );

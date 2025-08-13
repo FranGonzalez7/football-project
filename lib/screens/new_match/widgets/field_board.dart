@@ -123,43 +123,45 @@ class FieldBoard extends StatelessWidget {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      child: AspectRatio(
-        aspectRatio: 16 / 9, // mantén 16:9 como pediste
-        child: LayoutBuilder(
-          builder: (_, constraints) {
-            final w = constraints.maxWidth;
-            final h = constraints.maxHeight;
-
-            // Tamaño de burbuja proporcional (ajusta factor si quieres)
-            final bubbleSize = (w * 0.16).clamp(40.0, 72.0);
-
-            return Stack(
-              children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    'assets/images/green_vertical.png',
-                    fit: BoxFit.cover, // 16:9 puede recortar: esperado
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: AspectRatio(
+          aspectRatio: 16 / 9, // mantén 16:9 como pediste
+          child: LayoutBuilder(
+            builder: (_, constraints) {
+              final w = constraints.maxWidth;
+              final h = constraints.maxHeight;
+      
+              // Tamaño de burbuja proporcional (ajusta factor si quieres)
+              final bubbleSize = (w * 0.17).clamp(40.0, 72.0);
+      
+              return Stack(
+                children: [
+                  Positioned.fill(
+                    child: Image.asset(
+                      'assets/images/green_vertical.png',
+                      fit: BoxFit.contain, // 16:9 puede recortar: esperado
+                    ),
                   ),
-                ),
-
-                // ------- UPPER (rojo)
-                _slot(id: 'U1', color: upperTeam, number: '1',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU1, onLong: clearU1),
-                _slot(id: 'U2', color: upperTeam, number: '2',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU2, onLong: clearU2),
-                _slot(id: 'U3', color: upperTeam, number: '3',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU3, onLong: clearU3),
-                _slot(id: 'U4', color: upperTeam, number: '4',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU4, onLong: clearU4),
-                _slot(id: 'U5', color: upperTeam, number: '5',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU5, onLong: clearU5),
-
-                // ------- LOWER (azul)
-                _slot(id: 'D10', color: lowerTeam, number: '10', bubbleSize: bubbleSize, w: w, h: h, onTap: onD10, onLong: clearD10),
-                _slot(id: 'D9',  color: lowerTeam, number: '9',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD9,  onLong: clearD9),
-                _slot(id: 'D8',  color: lowerTeam, number: '8',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD8,  onLong: clearD8),
-                _slot(id: 'D7',  color: lowerTeam, number: '7',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD7,  onLong: clearD7),
-                _slot(id: 'D6',  color: lowerTeam, number: '6',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD6,  onLong: clearD6),
-              ],
-            );
-          },
+      
+                  // ------- UPPER (rojo)
+                  _slot(id: 'U1', color: upperTeam, number: '1',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU1, onLong: clearU1),
+                  _slot(id: 'U2', color: upperTeam, number: '2',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU2, onLong: clearU2),
+                  _slot(id: 'U3', color: upperTeam, number: '3',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU3, onLong: clearU3),
+                  _slot(id: 'U4', color: upperTeam, number: '4',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU4, onLong: clearU4),
+                  _slot(id: 'U5', color: upperTeam, number: '5',  bubbleSize: bubbleSize, w: w, h: h, onTap: onU5, onLong: clearU5),
+      
+                  // ------- LOWER (azul)
+                  _slot(id: 'D10', color: lowerTeam, number: '10', bubbleSize: bubbleSize, w: w, h: h, onTap: onD10, onLong: clearD10),
+                  _slot(id: 'D9',  color: lowerTeam, number: '9',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD9,  onLong: clearD9),
+                  _slot(id: 'D8',  color: lowerTeam, number: '8',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD8,  onLong: clearD8),
+                  _slot(id: 'D7',  color: lowerTeam, number: '7',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD7,  onLong: clearD7),
+                  _slot(id: 'D6',  color: lowerTeam, number: '6',  bubbleSize: bubbleSize, w: w, h: h, onTap: onD6,  onLong: clearD6),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

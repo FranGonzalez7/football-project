@@ -24,7 +24,7 @@ class GroupInfoCard extends StatelessWidget {
             border: Border.all(color: AppColors.primaryButton),
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(10.0),
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -32,7 +32,7 @@ class GroupInfoCard extends StatelessWidget {
                 Text(
                   'Welcome to $groupName',
                   style: const TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -41,7 +41,7 @@ class GroupInfoCard extends StatelessWidget {
                 Text(
                   'Group Code: $groupCode',
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     color: Colors.white,
                   ),
                 ),
@@ -59,7 +59,7 @@ class GroupInfoCard extends StatelessWidget {
             child: const Text(
               'Info Grupo',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
