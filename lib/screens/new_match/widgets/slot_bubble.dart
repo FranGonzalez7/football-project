@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/models/player_model.dart';
 import 'package:football_picker/theme/app_colors.dart';
+// 🧩 NUEVO: import para la ficha de jugador
+import 'package:football_picker/screens/players/widgets/player_card.dart';
 
 /// 🫧 Burbuja de slot sobre el campo.
-/// - Muestra avatar/foto o número del slot.
-/// - Opcionalmente etiqueta con el **primer nombre** del jugador.
-/// - Soporta resaltado (borde más grueso) cuando hay selección en el panel.
+/// - Tap: asigna o limpia (lo gestiona el padre vía callback).
+/// - Long-press: limpiar (callback).
+/// - Double-tap: si hay jugador asignado, abre su `PlayerCard`.
 class SlotBubble extends StatelessWidget {
   final String id;
   final Color teamColor;
@@ -16,8 +18,8 @@ class SlotBubble extends StatelessWidget {
   final VoidCallback onLongPress;
 
   // 🧩 Layout
-  final double radius; // tamaño de la burbuja
-  final bool labelAbove; // true para colocar etiqueta arriba (slots bajos)
+  final double radius;        // tamaño de la burbuja
+  final bool labelAbove;      // true para colocar etiqueta arriba (slots bajos)
 
   const SlotBubble({
     super.key,
@@ -28,8 +30,8 @@ class SlotBubble extends StatelessWidget {
     required this.highlighted,
     required this.onTap,
     required this.onLongPress,
-    this.radius = 28, // ligeramente más compacto
-    this.labelAbove = false, // FieldBoard decide según posición
+    this.radius = 28,
+    this.labelAbove = false,
   });
 
   @override
@@ -37,13 +39,11 @@ class SlotBubble extends StatelessWidget {
     // 📌 Estado derivado
     final bool filled = assigned != null;
     final bool hasName = (assigned?.name.trim().isNotEmpty ?? false);
-    final String firstName =
-        hasName ? assigned!.name.trim().split(' ').first : '';
-    final bool hasPhoto =
-        (assigned?.photoUrl != null && assigned!.photoUrl!.isNotEmpty);
+    final String firstName = hasName ? assigned!.name.trim().split(' ').first : '';
+    final bool hasPhoto = (assigned?.photoUrl != null && assigned!.photoUrl!.isNotEmpty);
     final double borderW = highlighted ? 5.0 : 4.0;
 
-    // 🏷️ Etiqueta de nombre: altura fija + scaleDown para evitar overflow
+    // 🏷️ Etiqueta de nombre
     Widget _nameLabel(String text) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -52,8 +52,8 @@ class SlotBubble extends StatelessWidget {
           borderRadius: BorderRadius.circular(6),
         ),
         child: SizedBox(
-          height: 12, // ✂️ control vertical
-          width: (radius * 2) + 8, // ↔️ similar al diámetro
+          height: 12,
+          width: (radius * 2) + 8,
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
@@ -71,7 +71,7 @@ class SlotBubble extends StatelessWidget {
       );
     }
 
-    // 🖼️ Avatar / círculo con borde del color del equipo
+    // 🖼️ Avatar
     final Widget avatar = Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -80,43 +80,44 @@ class SlotBubble extends StatelessWidget {
       child: CircleAvatar(
         radius: radius,
         backgroundColor: AppColors.textFieldBackground,
-        backgroundImage:
-            (filled && hasPhoto) ? NetworkImage(assigned!.photoUrl!) : null,
-        child:
-            !filled
-                ? Text(
-                  number,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                )
-                : null,
+        backgroundImage: (filled && hasPhoto) ? NetworkImage(assigned!.photoUrl!) : null,
+        child: !filled
+            ? Text(
+                number,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              )
+            : null,
       ),
     );
 
-    // 👆 Interacción + accesibilidad
     return Semantics(
-      // ♿ Info útil para accesibilidad móvil
-      label:
-          filled
-              ? 'Posición $id, ${assigned!.name}'
-              : 'Posición $id vacía, número $number',
+      label: filled ? 'Posición $id, ${assigned!.name}' : 'Posición $id vacía, número $number',
       button: true,
       child: GestureDetector(
-        onTap: onTap, // 👆 asignar / seleccionar
-        onLongPress: onLongPress, // ✋ limpiar slot
+        onTap: onTap,             // 👆 asignar/limpiar (según lógica del padre)
+        onLongPress: onLongPress, // ✋ limpiar (alternativa)
+        // 🖱️ NUEVO: doble-tap abre la ficha si hay jugador
+        onDoubleTap: () {
+          if (assigned != null) {
+            showDialog(
+              context: context,
+              builder: (_) => PlayerCard(player: assigned!),
+            );
+          }
+        },
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children:
-              labelAbove
-                  ? [
-                    if (hasName) _nameLabel(firstName),
-                    if (hasName) const SizedBox(height: 2),
-                    avatar,
-                  ]
-                  : [
-                    avatar,
-                    if (hasName) const SizedBox(height: 2),
-                    if (hasName) _nameLabel(firstName),
-                  ],
+          children: labelAbove
+              ? [
+                  if (hasName) _nameLabel(firstName),
+                  if (hasName) const SizedBox(height: 2),
+                  avatar,
+                ]
+              : [
+                  avatar,
+                  if (hasName) const SizedBox(height: 2),
+                  if (hasName) _nameLabel(firstName),
+                ],
         ),
       ),
     );

@@ -51,13 +51,11 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
   // Helpers para no repetir literales
   static const List<String> _upperSlots = ['U1', 'U2', 'U3', 'U4', 'U5'];
   static const List<String> _lowerSlots = ['D6', 'D7', 'D8', 'D9', 'D10'];
-  static const List<String> _allSlots = [
-    ..._upperSlots,
-    ..._lowerSlots,
-  ];
+  static const List<String> _allSlots = [..._upperSlots, ..._lowerSlots];
 
-  static Map<String, String?> _defaultSlots() =>
-      {for (final s in _allSlots) s: null};
+  static Map<String, String?> _defaultSlots() => {
+    for (final s in _allSlots) s: null,
+  };
 
   @override
   void initState() {
@@ -68,13 +66,13 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     MatchService()
         .getMatchById(groupId: widget.groupId, matchId: widget.matchId)
         .then((match) {
-      if (!mounted || match == null) return;
-      setState(() {
-        _selectedDate = match.scheduledDate;
-        _selectedTime = TimeOfDay.fromDateTime(match.scheduledDate);
-        _matchLocation = match.location.toString();
-      });
-    });
+          if (!mounted || match == null) return;
+          setState(() {
+            _selectedDate = match.scheduledDate;
+            _selectedTime = TimeOfDay.fromDateTime(match.scheduledDate);
+            _matchLocation = match.location.toString();
+          });
+        });
   }
 
   // -------------------- Acciones de edición --------------------
@@ -95,8 +93,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     );
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Lugar actualizado')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Lugar actualizado')));
   }
 
   Future<void> _editDateTime() async {
@@ -174,13 +173,34 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     );
   }
 
+  Future<void> _onSlotTap(String slotId) async {
+    if (_selectedPlayerId != null) {
+      // 👆 Asigna si hay un jugador seleccionado
+      await _assignToSlot(slotId);
+      return;
+    }
+
+    // 🧹 Si no hay selección y el slot está ocupado, límpialo
+    final current = _slotAssignments[slotId];
+    if (current != null) {
+      await _clearSlot(slotId);
+    }
+    // Si está vacío y no hay selección → no hacemos nada
+  }
+
   // -------------------- Inicio del partido --------------------
 
   Future<void> _startMatch() async {
     final teamA =
-        _upperSlots.map((s) => _slotAssignments[s]).whereType<String>().toList();
+        _upperSlots
+            .map((s) => _slotAssignments[s])
+            .whereType<String>()
+            .toList();
     final teamB =
-        _lowerSlots.map((s) => _slotAssignments[s]).whereType<String>().toList();
+        _lowerSlots
+            .map((s) => _slotAssignments[s])
+            .whereType<String>()
+            .toList();
 
     if (teamA.length != 5 || teamB.length != 5) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -199,8 +219,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     await ms.markMatchAsStarted(widget.groupId, widget.matchId);
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('¡Partido comenzado!')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('¡Partido comenzado!')));
   }
 
   // -------------------- UI --------------------
@@ -285,17 +306,17 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                               liveAssignments: _slotAssignments,
                               // Resalta todos los slots cuando hay un jugador seleccionado
                               highlightAll: _selectedPlayerId != null,
-                              // Callbacks de asignación
-                              onU1: () => _assignToSlot('U1'),
-                              onU2: () => _assignToSlot('U2'),
-                              onU3: () => _assignToSlot('U3'),
-                              onU4: () => _assignToSlot('U4'),
-                              onU5: () => _assignToSlot('U5'),
-                              onD6: () => _assignToSlot('D6'),
-                              onD7: () => _assignToSlot('D7'),
-                              onD8: () => _assignToSlot('D8'),
-                              onD9: () => _assignToSlot('D9'),
-                              onD10: () => _assignToSlot('D10'),
+                              // 👇 Tap inteligente (asigna o borra)
+                              onU1: () => _onSlotTap('U1'),
+                              onU2: () => _onSlotTap('U2'),
+                              onU3: () => _onSlotTap('U3'),
+                              onU4: () => _onSlotTap('U4'),
+                              onU5: () => _onSlotTap('U5'),
+                              onD6: () => _onSlotTap('D6'),
+                              onD7: () => _onSlotTap('D7'),
+                              onD8: () => _onSlotTap('D8'),
+                              onD9: () => _onSlotTap('D9'),
+                              onD10: () => _onSlotTap('D10'),
                               // Callbacks de limpieza
                               clearU1: () => _clearSlot('U1'),
                               clearU2: () => _clearSlot('U2'),
@@ -324,7 +345,6 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                                         : player.id;
                               });
                             },
-                            
                           ),
                         ],
                       );
