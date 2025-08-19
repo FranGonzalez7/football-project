@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+
 import 'package:football_picker/models/player_model.dart';
-import 'package:football_picker/screens/new_match/widgets/new_match_FABs.dart';
 import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/services/match_service.dart';
 import 'package:football_picker/theme/app_colors.dart';
@@ -8,8 +8,13 @@ import 'package:football_picker/theme/app_colors.dart';
 import 'package:football_picker/screens/new_match/widgets/match_header.dart';
 import 'package:football_picker/screens/new_match/widgets/field_board.dart';
 import 'package:football_picker/screens/new_match/widgets/player_selector_panel.dart';
+import 'package:football_picker/screens/new_match/widgets/new_match_FABs.dart';
 import 'package:football_picker/screens/new_match/utils/edit_location_dialog.dart';
 
+/// Pantalla principal para configurar un partido 5v5:
+/// - Cabecera con fecha/lugar
+/// - Tablero con slots (U1..U5 y D6..D10)
+/// - Selector inferior de jugadores
 class NewMatchScreen extends StatefulWidget {
   final String groupId;
   final String matchId;
@@ -25,54 +30,55 @@ class NewMatchScreen extends StatefulWidget {
 }
 
 class _NewMatchScreenState extends State<NewMatchScreen> {
-  late Future<List<Player>> _playersFuture;
+  // --- Datos base
+  late final Future<List<Player>> _playersFuture;
   final PlayerService _playerService = PlayerService();
 
+  // --- Estado de configuración
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   String _matchLocation = '';
 
+  // --- Selección actual en el panel inferior
   String? _selectedPlayerId;
 
-  // Copia local (inmediata) de asignaciones
+  // --- Asignaciones locales de slots -> playerId (se actualizan con el stream)
   Map<String, String?> _slotAssignments = _defaultSlots();
 
-  // Para lookup rápido
+  // --- Índice rápido por id
   Map<String, Player> _playersById = {};
 
-  static Map<String, String?> _defaultSlots() => {
-    'U1': null,
-    'U2': null,
-    'U3': null,
-    'U4': null,
-    'U5': null,
-    'D10': null,
-    'D9': null,
-    'D8': null,
-    'D7': null,
-    'D6': null,
-  };
+  // Helpers para no repetir literales
+  static const List<String> _upperSlots = ['U1', 'U2', 'U3', 'U4', 'U5'];
+  static const List<String> _lowerSlots = ['D6', 'D7', 'D8', 'D9', 'D10'];
+  static const List<String> _allSlots = [
+    ..._upperSlots,
+    ..._lowerSlots,
+  ];
+
+  static Map<String, String?> _defaultSlots() =>
+      {for (final s in _allSlots) s: null};
 
   @override
   void initState() {
     super.initState();
     _playersFuture = _playerService.getPlayers();
 
-    // Cargar fecha + lugar iniciales
+    // Carga inicial de fecha y lugar desde el match
     MatchService()
         .getMatchById(groupId: widget.groupId, matchId: widget.matchId)
         .then((match) {
-          if (match != null && mounted) {
-            setState(() {
-              _selectedDate = match.scheduledDate;
-              _selectedTime = TimeOfDay.fromDateTime(match.scheduledDate);
-              _matchLocation = match.location.toString();
-            });
-          }
-        });
+      if (!mounted || match == null) return;
+      setState(() {
+        _selectedDate = match.scheduledDate;
+        _selectedTime = TimeOfDay.fromDateTime(match.scheduledDate);
+        _matchLocation = match.location.toString();
+      });
+    });
   }
 
-  // --- Editar ubicación
+  // -------------------- Acciones de edición --------------------
+
   Future<void> _editLocation() async {
     final value = await showEditLocationDialog(
       context,
@@ -88,20 +94,18 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
       data: {'location': _matchLocation},
     );
 
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Lugar actualizado')));
-    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Lugar actualizado')));
   }
 
-  // --- Editar fecha/hora
   Future<void> _editDateTime() async {
     final now = DateTime.now();
+
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? now,
-      firstDate: DateTime(2025),
+      firstDate: now, // evita fechas pasadas; ajusta si quieres
       lastDate: DateTime(2080),
     );
     if (pickedDate == null) return;
@@ -132,19 +136,25 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     );
   }
 
-  // --- Asignar / limpiar slots
+  // -------------------- Asignaciones de slots --------------------
+
+  /// Asigna el jugador seleccionado al [slotId].
+  /// Si ese jugador ya estaba en otro slot, lo limpia primero.
   Future<void> _assignToSlot(String slotId) async {
     if (_selectedPlayerId == null) return;
 
+    // Limpiamos cualquier slot que tenga a ese jugador
     final previous = _slotAssignments.entries.firstWhere(
       (e) => e.value == _selectedPlayerId,
       orElse: () => const MapEntry('', null),
     );
-    if (previous.key.isNotEmpty) _slotAssignments[previous.key] = null;
+    if (previous.key.isNotEmpty) {
+      _slotAssignments[previous.key] = null;
+    }
 
     setState(() {
       _slotAssignments[slotId] = _selectedPlayerId;
-      _selectedPlayerId = null;
+      _selectedPlayerId = null; // des-selecciona tras asignar
     });
 
     await MatchService().updateSlotAssignments(
@@ -164,24 +174,13 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     );
   }
 
-  // --- Empezar partido
+  // -------------------- Inicio del partido --------------------
+
   Future<void> _startMatch() async {
     final teamA =
-        [
-          'U1',
-          'U2',
-          'U3',
-          'U4',
-          'U5',
-        ].map((s) => _slotAssignments[s]).whereType<String>().toList();
+        _upperSlots.map((s) => _slotAssignments[s]).whereType<String>().toList();
     final teamB =
-        [
-          'D6',
-          'D7',
-          'D8',
-          'D9',
-          'D10',
-        ].map((s) => _slotAssignments[s]).whereType<String>().toList();
+        _lowerSlots.map((s) => _slotAssignments[s]).whereType<String>().toList();
 
     if (teamA.length != 5 || teamB.length != 5) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -199,15 +198,18 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     );
     await ms.markMatchAsStarted(widget.groupId, widget.matchId);
 
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('¡Partido comenzado!')));
-    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('¡Partido comenzado!')));
   }
+
+  // -------------------- UI --------------------
 
   @override
   Widget build(BuildContext context) {
+    final viewPadding =
+        MediaQuery.maybeOf(context)?.viewPadding ?? EdgeInsets.zero;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('5 vs 5'),
@@ -220,6 +222,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.calendar_today),
+            tooltip: 'Fecha y hora',
             onPressed: _editDateTime,
           ),
         ],
@@ -249,9 +252,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                   selectedDate: _selectedDate,
                   location: _matchLocation,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
 
-                // Board en tiempo real
+                // Board + panel inferior sincronizados con el stream
                 Expanded(
                   child: StreamBuilder<Map<String, String>>(
                     stream: MatchService().watchSlotAssignments(
@@ -259,7 +262,10 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                       matchId: widget.matchId,
                     ),
                     builder: (context, snap) {
+                      // Estado base
                       final live = _defaultSlots();
+
+                      // Mezcla segura con lo que venga del stream
                       if (snap.hasData) {
                         for (final e in snap.data!.entries) {
                           if (live.containsKey(e.key)) live[e.key] = e.value;
@@ -267,11 +273,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                       }
                       _slotAssignments = Map<String, String?>.from(live);
 
-                      final assignedIds = <String>{
-                        ..._slotAssignments.values.whereType<String>(),
-                        if (snap.hasData)
-                          ...snap.data!.values.whereType<String>(),
-                      };
+                      // Conjunto de ids ya asignados (para filtrar el panel)
+                      final assignedIds =
+                          _slotAssignments.values.whereType<String>().toSet();
 
                       return Column(
                         children: [
@@ -279,7 +283,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                             child: FieldBoard(
                               playersById: _playersById,
                               liveAssignments: _slotAssignments,
+                              // Resalta todos los slots cuando hay un jugador seleccionado
                               highlightAll: _selectedPlayerId != null,
+                              // Callbacks de asignación
                               onU1: () => _assignToSlot('U1'),
                               onU2: () => _assignToSlot('U2'),
                               onU3: () => _assignToSlot('U3'),
@@ -290,6 +296,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                               onD8: () => _assignToSlot('D8'),
                               onD9: () => _assignToSlot('D9'),
                               onD10: () => _assignToSlot('D10'),
+                              // Callbacks de limpieza
                               clearU1: () => _clearSlot('U1'),
                               clearU2: () => _clearSlot('U2'),
                               clearU3: () => _clearSlot('U3'),
@@ -302,9 +309,9 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                               clearD10: () => _clearSlot('D10'),
                             ),
                           ),
-                          Container(height: 18),
+                          const SizedBox(height: 18),
 
-                          // Panel inferior
+                          // Panel inferior con lista filtrada y acción de empezar
                           PlayerSelectorPanel(
                             playersById: _playersById,
                             assignedIds: assignedIds,
@@ -317,7 +324,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                                         : player.id;
                               });
                             },
-                            onStartMatch: _startMatch,
+                            
                           ),
                         ],
                       );
@@ -330,18 +337,18 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
         ),
       ),
 
+      // FABs (de momento conecto Start; Filter queda como TODO)
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(
-          bottom:
-              96 +
-              MediaQuery.viewPaddingOf(
-                context,
-              ).bottom, // altura selector + margen
-          
-        ),
+        // Altura del selector + margen + safe area
+        padding: EdgeInsets.only(bottom: 96 + viewPadding.bottom),
         child: Align(
           alignment: Alignment.bottomRight,
-          child: NewMatchFABs(onStartMatch: () {}, onFilter: () {}),
+          child: NewMatchFABs(
+            onStartMatch: _startMatch,
+            onFilter: () {
+              // TODO: abrir modal de filtros del selector si decides añadirlo
+            },
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

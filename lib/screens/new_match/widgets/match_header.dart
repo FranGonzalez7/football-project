@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// 🏷️ Widget cabecera del partido:
+/// - Muestra la **fecha/hora** seleccionada o un placeholder.
+/// - Muestra la **ubicación** o un texto por confirmar.
 class MatchHeader extends StatelessWidget {
   final DateTime? selectedDate;
   final String location;
@@ -15,6 +18,7 @@ class MatchHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // 📅 Fecha y hora del partido
         Text(
           selectedDate != null
               ? '📅 ${DateFormat('dd/MM/yyyy – HH:mm').format(selectedDate!)}'
@@ -26,7 +30,10 @@ class MatchHeader extends StatelessWidget {
             color: Colors.white,
           ),
         ),
+
         const SizedBox(height: 4),
+
+        // 📍 Ubicación del partido
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -36,7 +43,7 @@ class MatchHeader extends StatelessWidget {
               child: Text(
                 location.trim().isNotEmpty ? location : 'Lugar por confirmar',
                 style: const TextStyle(fontSize: 14, color: Colors.white70),
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, // ✂️ evita overflow
               ),
             ),
           ],

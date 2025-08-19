@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:football_picker/theme/app_colors.dart';
 
+/// 🧭 Grupo de FABs para la pantalla de nuevo partido:
+/// - 🔎 Filtro (FAB redondo pequeño)
+/// - ▶️ Comenzar partido (FAB extendido)
+///
+/// 💡 Notas:
+/// - Los `heroTag` deben ser únicos por pantalla para evitar conflictos de Hero.
+/// - Tooltips mejoran accesibilidad en móvil y web.
 class NewMatchFABs extends StatelessWidget {
-  final VoidCallback onStartMatch;
-  final VoidCallback onFilter;
+  final VoidCallback onStartMatch; // ▶️ comenzar
+  final VoidCallback onFilter;     // 🔎 filtrar
 
   const NewMatchFABs({
     super.key,
@@ -11,37 +18,50 @@ class NewMatchFABs extends StatelessWidget {
     required this.onFilter,
   });
 
+  // ⚙️ Constantes de UI
+  static const double _miniSize = 36;
+  static const double _gap = 8;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // FAB pequeño redondo (filtro)
-        SizedBox(
-          height: 36,
-          width: 36,
-          child: FloatingActionButton(
-            heroTag: 'filterFab',
-            backgroundColor: AppColors.primaryButton,
-            elevation: 2,
-            onPressed: onFilter,
-            child: const Icon(Icons.filter_list, size: 18, color: Colors.black),
+        // 🔎 FAB pequeño redondo (filtro)
+        Semantics(
+          label: 'Abrir filtros',
+          button: true,
+          child: SizedBox(
+            height: _miniSize,
+            width: _miniSize,
+            child: FloatingActionButton(
+              heroTag: 'filterFab',
+              backgroundColor: AppColors.primaryButton,
+              elevation: 2,
+              tooltip: 'Filtrar jugadores',
+              onPressed: onFilter,
+              child: const Icon(Icons.filter_list, size: 18, color: Colors.black),
+            ),
           ),
         ),
-        const SizedBox(width: 8),
-        // FAB estrecho y más bajo (comenzar partido)
-        SizedBox(
-          height: 36,
-          child: FloatingActionButton.extended(
-            heroTag: 'startFab',
-            backgroundColor: AppColors.primaryButton,
-            elevation: 2,
-            icon: const Icon(Icons.play_arrow, size: 18, color: Colors.black),
-            label: const Text(
-              'Comenzar partido',
-              style: TextStyle(fontSize: 13, color: Colors.black),
+        const SizedBox(width: _gap),
+
+        // ▶️ FAB extendido (comenzar partido)
+        Semantics(
+          label: 'Comenzar partido',
+          button: true,
+          child: SizedBox(
+            height: _miniSize, // compacto para que no tape el panel
+            child: FloatingActionButton.extended(
+              heroTag: 'startFab',
+              backgroundColor: AppColors.primaryButton,
+              elevation: 2,
+              tooltip: 'Comenzar partidos',
+              icon: const Icon(Icons.play_arrow, size: 18, color: Colors.black),
+              label: const Text('Comenzar partido',
+                  style: TextStyle(fontSize: 13, color: Colors.black)),
+              onPressed: onStartMatch,
             ),
-            onPressed: onStartMatch,
           ),
         ),
       ],
