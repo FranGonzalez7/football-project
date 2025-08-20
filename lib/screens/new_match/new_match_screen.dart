@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:football_picker/app/routes.dart';
 
 import 'package:football_picker/models/player_model.dart';
 import 'package:football_picker/services/player_services.dart';
 import 'package:football_picker/services/match_service.dart';
+import 'package:football_picker/services/score_service.dart'; 
 import 'package:football_picker/theme/app_colors.dart';
 
 import 'package:football_picker/screens/new_match/widgets/match_header.dart';
@@ -54,8 +56,8 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
   static const List<String> _allSlots = [..._upperSlots, ..._lowerSlots];
 
   static Map<String, String?> _defaultSlots() => {
-    for (final s in _allSlots) s: null,
-  };
+        for (final s in _allSlots) s: null,
+      };
 
   @override
   void initState() {
@@ -66,13 +68,13 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     MatchService()
         .getMatchById(groupId: widget.groupId, matchId: widget.matchId)
         .then((match) {
-          if (!mounted || match == null) return;
-          setState(() {
-            _selectedDate = match.scheduledDate;
-            _selectedTime = TimeOfDay.fromDateTime(match.scheduledDate);
-            _matchLocation = match.location.toString();
-          });
-        });
+      if (!mounted || match == null) return;
+      setState(() {
+        _selectedDate = match.scheduledDate;
+        _selectedTime = TimeOfDay.fromDateTime(match.scheduledDate);
+        _matchLocation = match.location.toString();
+      });
+    });
   }
 
   // -------------------- Acciones de edición --------------------
@@ -191,17 +193,17 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
   // -------------------- Inicio del partido --------------------
 
   Future<void> _startMatch() async {
-    final teamA =
-        _upperSlots
-            .map((s) => _slotAssignments[s])
-            .whereType<String>()
-            .toList();
-    final teamB =
-        _lowerSlots
-            .map((s) => _slotAssignments[s])
-            .whereType<String>()
-            .toList();
+    // Derivamos ids de cada equipo a partir de los slots actuales
+    final teamA = _upperSlots
+        .map((s) => _slotAssignments[s])
+        .whereType<String>()
+        .toList();
+    final teamB = _lowerSlots
+        .map((s) => _slotAssignments[s])
+        .whereType<String>()
+        .toList();
 
+    // Validación 5 vs 5
     if (teamA.length != 5 || teamB.length != 5) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Selecciona 5 jugadores por equipo')),
@@ -209,19 +211,46 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
       return;
     }
 
-    final ms = MatchService();
-    await ms.updateTeams(
-      groupId: widget.groupId,
-      matchId: widget.matchId,
-      teamA: teamA,
-      teamB: teamB,
-    );
-    await ms.markMatchAsStarted(widget.groupId, widget.matchId);
+    try {
+      final ms = MatchService();
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('¡Partido comenzado!')));
+      // 1) Persistir equipos en el documento del partido (para que queden guardados)
+      await ms.updateTeams(
+        groupId: widget.groupId,
+        matchId: widget.matchId,
+        teamA: teamA,
+        teamB: teamB,
+      );
+
+      // 2) Inicializar marcador y goles por jugador con ScoreService
+      await ScoreService().startMatch(
+        groupId: widget.groupId,
+        matchId: widget.matchId,
+        teamAPlayerIds: teamA,
+        teamBPlayerIds: teamB,
+      );
+
+      // 3) Navegar a la pantalla de marcador
+      if (!mounted) return;
+      Navigator.pushNamed(
+        context,
+        AppRoutes.score,
+        arguments: {
+          'groupId': widget.groupId,
+          'matchId': widget.matchId,
+          'teamAName': 'Azul', // opcional
+          'teamBName': 'Rojo', // opcional
+          // Si quisieras pasar colores, añade:
+          // 'teamAColor': AppColors.primaryButton,
+          // 'teamBColor': Colors.blue,
+        },
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al comenzar el partido: $e')),
+      );
+    }
   }
 
   // -------------------- UI --------------------

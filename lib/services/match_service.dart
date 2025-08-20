@@ -260,7 +260,6 @@ class MatchService {
       final filtered =
           list.where((m) {
             // Evita nulos por si acaso
-            if (m.scheduledDate == null) return false;
             final notTooOld = m.scheduledDate.isAfter(cutoff);
             final notStartedOrDontCare =
                 !onlyUnstarted || (m.hasStarted == false);
