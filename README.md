@@ -50,7 +50,7 @@ Fútbol Picker es una **app móvil multiplataforma** desarrollada en **Flutter**
 ---
 
 ## 🔹 Contacto
-- Fran González Romero – [LinkedIn](https://www.linkedin.com/in/frangonzalezromero/)  
+- LinkedIn - https://www.linkedin.com/in/frangonzalezromero/  
 - Email: gonzalezromerofran@gmail.com 
 
 ---
