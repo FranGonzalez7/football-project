@@ -100,7 +100,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
         .doc(widget.matchId);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Marcador en vivo')),
+      appBar: AppBar(title: const Text('Score Screen')),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: matchRef.snapshots(),
         builder: (context, snap) {
