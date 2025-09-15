@@ -33,19 +33,14 @@ Fútbol Picker es una **app móvil multiplataforma** desarrollada en **Flutter**
 ## 🔹 Screenshots / Mockups
 > Nota: algunas pantallas todavía están en fase de diseño.
 
-![Login Screen](ruta_a_tu_screenshot_login.png)  
-![Player Selector](ruta_a_tu_screenshot_player_selector.png)  
-![Score Screen](ruta_a_tu_screenshot_score.png)  
+![Login Screen](assets/images/login_screen.png)  
+![Register Screen](assets/images/register_screen.png)  
+![Home Screen](assets/images/home_screen.png)  
+![Players Screen](assets/images/players_screen.png)  
+![Match Screen](assets/images/match_screen.png)  
+![Score Screen](assets/images/score_screen.png)  
 
-*(Reemplaza las rutas con las imágenes de tu proyecto o bocetos)*
 
----
-
-## 🔹 Cómo contribuir
-1. Haz un **fork** del repositorio.  
-2. Crea una **rama** para tu feature (`feature/nombre-feature`).  
-3. Realiza los cambios y haz un **pull request**.  
-4. Etiqueta al autor para revisión.
 
 ---
 
