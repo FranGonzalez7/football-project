@@ -17,10 +17,9 @@ Fútbol Picker es una **app móvil multiplataforma** desarrollada en **Flutter**
 
 ## 🔹 Tecnologías utilizadas
 - **Flutter & Dart** – desarrollo multiplataforma.  
-- **Firebase** – Auth, Firestore y almacenamiento.  
-- **Riverpod** – gestión del estado de la app.  
+- **Firebase** – Auth, Firestore y almacenamiento.    
 - **Git/GitHub** – control de versiones.  
-- **Figma** – diseño de interfaces y prototipos.  
+ 
 
 ---
 
@@ -51,8 +50,8 @@ Fútbol Picker es una **app móvil multiplataforma** desarrollada en **Flutter**
 ---
 
 ## 🔹 Contacto
-- Fran González Romero – [LinkedIn](https://www.linkedin.com/in/frangonzalez/)  
-- Email: tuemail@dominio.com  
+- Fran González Romero – [LinkedIn](www.linkedin.com/in/frangonzalezromero)  
+- Email: gonzalezromerofran@gmail.com  
 
 ---
 
